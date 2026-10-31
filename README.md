@@ -3,8 +3,8 @@
 ES & NQ order flow mentorship funnel for Mert ([@mertfutures](https://www.instagram.com/mertfutures/)). It's built the
 same way as the Ricky and Jean Ivan funnels: all pages live in one file, `index.html`, and the URL picks the page.
 
-1. **Opt-in** (`/`, also `/discord`): headline, Discord sign-up form, "Sound familiar?" cards and, once there is
-   proof, the results gallery.
+1. **Opt-in** (`/`, also `/discord`): headline, Discord sign-up form, a preview of the Discord's channels and,
+   once there is proof, the results gallery.
 2. **Application**, A/B tested. Each new opt-in is sent to one of two versions at random (50/50, set by
    `abSplitV1` in `CONFIG`) and keeps that version if they come back:
    - **V1** (`/apply`): main video (autoplays muted, "Click to listen"), a short form beside the calendar. The
@@ -37,7 +37,9 @@ Everything below lives in the `CONFIG` block near the end of `index.html` unless
 | Videos | `videos.vsl`, `nextSteps` and the five `faq…` videos (Vimeo links get the custom player) | **Empty**: placeholders show |
 | Discord invite | `discordUrl` | Empty: /not-qualified says "check your email + SMS" |
 | Confirmation email | `confirmSubject` (and `confirmFrom` if the confirmation comes from a fixed address) | Set to "Strategy Call"; must match the calendar's confirmation email subject |
-| 1-on-1 spots | `spotsLeft`, `spotsFill` | 3 left, 88% full: **set the real number** |
+| Spots bar | `spotsLeft`, `spotsFill` | 3 left, 88% full: **set the real number** |
+| Discord preview | `discordChannels` (the channel list under the page 1 form) | Example channels: **rename them to match the real server** |
+| Program name | `program` | "Order Flow Elite" |
 | The 12 weeks | The two cards under "Step #3" on `/booked` | Built from the offer as researched (8 developing + 4 following weeks); **check every bullet with Mert** |
 | Process promise | `guarantee` | Off. Suggested wording is in the comment; only switch it on with wording Mert agrees to |
 | "Just joined" toast | `recentJoins` | Off. Only ever feed it real sign-ups |
@@ -114,21 +116,21 @@ muted, with a "Click to listen" box that restarts them with sound.
 
 ## Why the copy says what it says
 
-The copy follows the two research docs (ICP / buyer avatar and competitor research):
+The copy follows Jean Ivan's funnel, line for line where it can, aimed at the buyer in the research docs
+(ICP / buyer avatar and competitor research):
 
-- **Lead with the pain only Mert's offer fixes.** His buyer already understands order flow and has usually
-  bought courses, indicators and evals. Free AMT content (Fabio Valentini, TRADEPRO, ICT) and $150/month Whop
-  groups (Yush Capital, Flipping Futures) already sell the information. So the headlines say "you can read it
-  on replay but freeze live" and "you don't need more information", and the offer is sold as execution
-  coaching: reviews of *your* trades and the 4-week following phase.
-- **The application asks what the closer needs.** Main problem first (Mert's own quiz options, ranked by likely
-  buyer value), how many evals they bought in the last year (pain and budget in one), and when they can trade
-  (the 9–5 objection, answered on the call).
-- **The FAQs answer the market's objections:** "salesman, not trader" (best answered with an unedited live
-  session, losses included), "can I do this with a job?", and "I've already bought courses".
-- **No P&L, payout, win-rate or "get funded" claims.** The FTC (Warrior Trading, Online Trading Academy) and
-  Meta both act on these, and this buyer distrusts them anyway. Mert's own disclaimer is in every footer, plus a
-  note on replay/simulated trading and a Meta non-affiliation line for ads.
-- **Honest scarcity and social proof only.** The spots bar shows the real number of 1-on-1 spots, the "just
-  joined" toast stays off until it's fed real sign-ups, and the results sections stay hidden until there's
-  real, consented proof.
+- **Page 1 headline** uses Jean Ivan's formula: "Discover My [named strategy] That 9-5 Traders Are Using To [outcome]".
+  The outcome is the market's loudest pain, blowing prop firm accounts, rather than a dollar figure. If Mert has a
+  real, provable number (total payouts, funded accounts), it can go in the headline the way Jean Ivan's "$5k
+  payouts" does.
+- **Page 2** keeps Jean Ivan's three lines: check your email + SMS, "The Real Reason You Keep Blowing Prop Firm
+  Accounts (It's Not Your Strategy)", then Step #1 and Step #2. The VSL should pay that off: the real reason is
+  execution, not the strategy.
+- **The application asks what the closer needs.** Main problem first (Mert's own quiz options), how many evals
+  they bought in the last year (pain and budget in one), and when they can trade (the 9–5 objection).
+- **The FAQs answer the market's objections:** "is Mert legit?" (best answered with an unedited live session,
+  losses included), "can I do this with a job?" and "I've already bought courses".
+- **No P&L, payout or win-rate screenshots in ads.** Meta rejects them and the FTC treats them as earnings claims.
+  Mert's own disclaimer is in every footer.
+- **Social proof only from real people.** The "just joined" toast stays off until it's fed real sign-ups, and the
+  results sections stay hidden until there's real, consented proof.

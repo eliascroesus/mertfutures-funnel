@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MertFutures Order Flow Funnel</title>
+<title>MertFutures Trading Funnel</title>
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- Link preview (iMessage, WhatsApp, Instagram/Facebook, X, Discord…). og:image must be a full URL;
      update the domain here if the site ever moves. -->
-<meta name="description" content="ES &amp; NQ order flow mentorship for traders who can read it on replay but freeze live. Free Discord, 1-on-1 coaching with Mert.">
+<meta name="description" content="Not signals: a full NQ &amp; ES order flow mentorship. 1-on-1 coaching with Mert and a free Discord.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MertFutures">
-<meta property="og:title" content="You Can Read It On Replay. Now Execute It Live.">
-<meta property="og:description" content="ES &amp; NQ order flow mentorship for traders who can read it on replay but freeze live. Free Discord, 1-on-1 coaching with Mert.">
+<meta property="og:title" content="The Order Flow Strategy 9-5 Traders Use To Stop Blowing Prop Firm Accounts">
+<meta property="og:description" content="Not signals: a full NQ &amp; ES order flow mentorship. 1-on-1 coaching with Mert and a free Discord.">
 <meta property="og:url" content="https://mertfutures.com/">
 <meta property="og:image" content="https://mertfutures.com/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="MertFutures: ES and NQ order flow, from replay to live execution">
+<meta property="og:image:alt" content="MertFutures: the order flow strategy 9-5 traders use to stop blowing prop firm accounts">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mertfutures.com/og-image.jpg">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -42,21 +42,21 @@ html:not([data-page="booked"]) #view-booked,
 html:not([data-page="notqualified"]) #view-notqualified,
 html:not([data-page="waitlist"]) #view-waitlist { display: none; }
 /* Layout: three funnel steps in one file (opt-in → VSL + application → booked), each a
-   black-to-deep-teal band with a centred column, white cards for forms, gold for the one action. */
+   black-to-violet band with a centred column, white cards for forms, gold for the one action. */
 :root {
   color-scheme: dark;
-  --ink: #04080b;          /* top of every band */
-  --deep: #0b3a40;         /* bottom of every band */
-  --fg: #f2fbfa;
-  --muted: #9fc6c2;
-  --accent: #2fe0c0;       /* highlighted words in headlines */
+  --ink: #07020f;          /* top of every band */
+  --deep: #3b0f7a;         /* bottom of every band */
+  --fg: #f8f4ff;
+  --muted: #c3b2e6;
+  --accent: #c084fc;       /* highlighted words in headlines */
   --gold: #f7c948;
   --gold-2: #e6a417;
   --gold-ink: #241a02;
   --card: #ffffff;
-  --card-ink: #0e1c1f;
-  --card-muted: #60767a;
-  --line: #dbe6e7;
+  --card-ink: #1a1030;
+  --card-muted: #6e6488;
+  --line: #e6e0f2;
   --field: #eef0f3;         /* empty input box: neutral grey */
   --field-line: #d3d7dd;
   --field-done: #ffffff;    /* once it's filled in or picked */
@@ -66,8 +66,8 @@ html:not([data-page="waitlist"]) #view-waitlist { display: none; }
   --dc-muted: #949ba4;
   --dc-name: #f2f3f5;
   --dc-feed: #1e1f22;      /* Discord channel background */
-  --ph: #0c2629;           /* video placeholder fill */
-  --ph-line: rgba(47, 224, 192, .12);
+  --ph: #1c0b3a;           /* video placeholder fill */
+  --ph-line: rgba(192, 132, 252, .12);
 
   --form-text: 1rem;       /* every question, answer and dropdown option in the forms */
 
@@ -96,7 +96,9 @@ a { color: inherit; }
 /* ---------- Bands & column ---------- */
 .view {
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--ink) 0, var(--deep) 1100px) var(--deep);
+  background:
+    radial-gradient(ellipse 80% 520px at 50% -80px, rgba(147, 51, 234, .38), transparent 72%),
+    linear-gradient(180deg, var(--ink) 0, #1c0640 520px, var(--deep) 1100px) var(--deep);
   padding-block: 28px 56px;
 }
 .wrap {
@@ -123,11 +125,6 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   max-width: 30ch;
 }
 .hl { color: var(--accent); }
-.eyebrow {
-  margin: 0 0 -12px; text-align: center; text-wrap: balance;
-  font: 700 .74rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
-}
-.eyebrow b { color: var(--accent); font-weight: 700; }
 .sub {
   font-size: clamp(1.1rem, 2.6vw, 1.45rem);
   font-weight: 800;
@@ -188,7 +185,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .scarcity__row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .pill {
   font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  border: 1px solid rgba(47, 224, 192, .55); color: var(--accent);
+  border: 1px solid rgba(192, 132, 252, .55); color: var(--accent);
   border-radius: 999px; padding: 3px 9px;
 }
 .spots { font-weight: 700; font-size: .85rem; font-variant-numeric: tabular-nums; }
@@ -196,7 +193,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .meter span {
   display: block; height: 100%; width: var(--fill, 88%);
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), #a7f3e4);
+  background: linear-gradient(90deg, var(--accent), #f0abfc);
   animation: fill 1.6s cubic-bezier(.2, .7, .2, 1);
 }
 @keyframes fill { from { width: 62%; } }
@@ -231,7 +228,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 }
 .input::placeholder { color: #8a9099; }
 .input:focus, .input:not(:placeholder-shown) { background: var(--field-done); }
-.input:focus, .select:focus { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(11, 58, 64, .15); }
+.input:focus, .select:focus { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(59, 15, 122, .15); }
 .input[aria-invalid="true"] { border-color: var(--danger); }
 /* Custom dropdown: the real <select> stays in the form (hidden) and holds the value. */
 .dd { position: relative; }
@@ -248,14 +245,14 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .dd__btn.is-empty { background: var(--field); }
 .dd__btn:hover { border-color: #b9bec6; }
 .dd__btn.is-empty .dd__value { color: #8a9099; }
-.dd__btn:focus-visible, .dd.is-open .dd__btn { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(11, 58, 64, .15); }
+.dd__btn:focus-visible, .dd.is-open .dd__btn { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(59, 15, 122, .15); }
 .dd__chev { flex: none; width: 18px; height: 18px; color: var(--card-muted); transition: transform .2s ease; }
 .dd.is-open .dd__chev { transform: rotate(180deg); }
 .dd__list {
   position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px);
   margin: 0; padding: 6px; list-style: none;
   background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(14, 28, 31, .18);
+  box-shadow: 0 16px 40px rgba(26, 16, 48, .18);
   max-height: 280px; overflow-y: auto;
 }
 .dd.is-up .dd__list { top: auto; bottom: calc(100% + 6px); }   /* not enough room below inside the card */
@@ -264,7 +261,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   padding: 10px 12px; border-radius: 8px;
   font-size: var(--form-text); color: var(--card-ink); cursor: pointer;
 }
-.dd__opt.is-active { background: #e9f6f4; }
+.dd__opt.is-active { background: #f3edfd; }
 .dd__opt[aria-selected="true"] { color: var(--deep); font-weight: 700; }
 .dd__opt svg { flex: none; width: 16px; height: 16px; visibility: hidden; }
 .dd__opt[aria-selected="true"] svg { visibility: visible; }
@@ -336,7 +333,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .receipt {
   break-inside: avoid;
   margin: 0 0 14px;
-  background: #071a1c;
+  background: #12082a;
   border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 14px;
   overflow: hidden;
@@ -346,18 +343,30 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .receipt figcaption { padding: 10px 14px; font-family: var(--display); font-weight: 700; font-size: .95rem; }
 .receipt figcaption b { color: var(--accent); font-weight: 800; }
 
-/* ---------- "Sound familiar?" cards (page 1 and /waitlist) ---------- */
-.pains { width: 100%; display: grid; gap: 16px; justify-items: center; }
-.pains__grid { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-@media (max-width: 560px) { .pains__grid { grid-template-columns: 1fr; } }
-.pain {
-  margin: 0; display: flex; gap: 12px; align-items: flex-start;
-  padding: 14px 16px; border-radius: 14px;
-  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1);
-  font-size: .98rem; line-height: 1.45;
+/* ---------- Discord preview under the opt-in form ---------- */
+.inside { width: 100%; display: grid; gap: 18px; justify-items: center; }
+.server {
+  width: 100%; max-width: 560px; overflow: hidden;
+  background: var(--dc-feed); color: var(--dc-fg); border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(192, 132, 252, .45), 0 0 50px rgba(147, 51, 234, .35);
 }
-.pain svg { flex: none; width: 22px; height: 22px; margin-top: 1px; color: var(--accent); }
-.pains__turn { margin: 4px 0 0; max-width: 36ch; text-align: center; text-wrap: balance; font: 800 clamp(1.1rem, 2.8vw, 1.4rem)/1.3 var(--display); }
+.server__head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: #2b2d31; border-bottom: 1px solid rgba(0, 0, 0, .35); }
+.server__icon {
+  flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+  background: linear-gradient(150deg, #7c3aed, #3b0f7a); color: #fff; font: 800 1.25rem var(--display);
+}
+.server__head strong { display: block; color: var(--dc-name); font: 800 1.05rem var(--display); }
+.server__head small { display: flex; align-items: center; gap: 6px; color: var(--dc-muted); font-size: .8rem; }
+.server__head small i { width: 8px; height: 8px; border-radius: 50%; background: #23a55a; }
+.server__label { margin: 14px 18px 4px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--dc-muted); }
+.server__list { margin: 0; padding: 0 8px 12px; list-style: none; display: grid; gap: 2px; }
+.server__ch { display: flex; align-items: center; gap: 12px; padding: 10px 10px; border-radius: 8px; }
+.server__ch:first-child { background: rgba(255, 255, 255, .06); }
+.server__hash { flex: none; color: var(--dc-muted); font: 500 1.35rem/1 var(--body); width: 16px; text-align: center; }
+.server__ch div { min-width: 0; }
+.server__ch b { display: block; color: var(--dc-name); font-weight: 700; font-size: .98rem; }
+.server__ch div span { display: block; color: var(--dc-muted); font-size: .85rem; }
+.server__ch .server__pin { display: inline-block; margin-left: auto; flex: none; font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: #7c3aed; border-radius: 4px; padding: 2px 6px; }
 
 /* ---------- How the 12 weeks work (/booked) ---------- */
 .weeks { width: 100%; max-width: 760px; display: grid; gap: 14px; }
@@ -405,7 +414,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   background:
     linear-gradient(var(--ph-line) 1px, transparent 1px) 0 0 / 48px 48px,
     linear-gradient(90deg, var(--ph-line) 1px, transparent 1px) 0 0 / 48px 48px,
-    radial-gradient(ellipse at center, #15454a 0%, var(--ph) 70%);
+    radial-gradient(ellipse at center, #3a1a72 0%, var(--ph) 70%);
   box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
 }
 .video iframe, .video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -418,7 +427,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   width: clamp(58px, 11vw, 88px); aspect-ratio: 1; border-radius: 50%;
   background: var(--accent); color: var(--ink);
   display: grid; place-items: center;
-  box-shadow: 0 0 0 10px rgba(47, 224, 192, .18);
+  box-shadow: 0 0 0 10px rgba(192, 132, 252, .18);
   pointer-events: none; opacity: 0; transition: opacity .2s ease;
 }
 .vp__big svg { width: 42%; height: 42%; margin-left: 8%; }
@@ -458,14 +467,14 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   font-family: var(--display); font-weight: 800; font-size: .7rem;
   letter-spacing: .16em; text-transform: uppercase;
   color: var(--accent);
-  border: 1px solid rgba(47, 224, 192, .5); border-radius: 999px; padding: 4px 12px;
+  border: 1px solid rgba(192, 132, 252, .5); border-radius: 999px; padding: 4px 12px;
 }
 .video__play {
   width: clamp(58px, 11vw, 88px); aspect-ratio: 1;
   border-radius: 50%; border: 0; cursor: pointer;
   background: var(--accent); color: var(--ink);
   display: grid; place-items: center;
-  box-shadow: 0 0 0 10px rgba(47, 224, 192, .18);
+  box-shadow: 0 0 0 10px rgba(192, 132, 252, .18);
   transition: transform .15s ease;
 }
 .video__play:hover { transform: scale(1.06); }
@@ -484,7 +493,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   display: grid; justify-items: center; gap: 8px;
   padding: 18px 14px;
   font: inherit; color: #fff; cursor: pointer;
-  background: rgba(15, 118, 110, .92);
+  background: rgba(109, 40, 217, .92);
   border: 2px solid rgba(255, 255, 255, .85);
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, .4);
@@ -522,7 +531,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
   width: min(100%, 280px);
   background: var(--card); color: var(--card-ink);
   border: 1px solid var(--line); border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(14, 28, 31, .2);
+  box-shadow: 0 10px 30px rgba(26, 16, 48, .2);
   padding: 16px 18px; text-align: center;
   display: grid; gap: 6px; justify-items: center;
 }
@@ -533,7 +542,7 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .cal-ph {
   height: 100%; min-height: 420px; display: grid; place-items: center; align-content: center; gap: 8px;
   padding: 24px; text-align: center; color: var(--card-muted); font-size: .9rem;
-  background: repeating-linear-gradient(135deg, #f4f8f8 0 12px, #fff 12px 24px);
+  background: repeating-linear-gradient(135deg, #f7f4fc 0 12px, #fff 12px 24px);
 }
 .cal-ph strong { font-family: var(--display); color: var(--card-ink); font-size: 1rem; }
 .cal-ph code { font-size: .8rem; background: var(--field); border-radius: 4px; padding: 1px 5px; }
@@ -568,31 +577,31 @@ h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wr
 .tf__opt {
   position: relative; display: flex; align-items: center; gap: 12px;
   padding: 11px 14px; border-radius: 10px; cursor: pointer;
-  border: 1px solid #bfdcd8; background: rgba(11, 58, 64, .04);
+  border: 1px solid #d6c9f0; background: rgba(59, 15, 122, .04);
   font-size: 1rem; color: var(--card-ink);
   transition: background-color .15s ease, border-color .15s ease;
 }
-.tf__opt:hover { background: rgba(11, 58, 64, .09); }
+.tf__opt:hover { background: rgba(59, 15, 122, .09); }
 .tf__opt input { position: absolute; opacity: 0; pointer-events: none; }
 .tf__key {
   flex: none; width: 26px; height: 26px; display: grid; place-items: center;
-  border: 1px solid #bfdcd8; border-radius: 6px; background: var(--card);
+  border: 1px solid #d6c9f0; border-radius: 6px; background: var(--card);
   font: 700 .75rem var(--body); color: var(--deep);
 }
 .tf__opt > svg { flex: none; width: 18px; height: 18px; margin-left: auto; color: var(--deep); visibility: hidden; }
-.tf__opt:has(input:checked) { border-color: var(--deep); background: rgba(11, 58, 64, .1); }
+.tf__opt:has(input:checked) { border-color: var(--deep); background: rgba(59, 15, 122, .1); }
 .tf__opt:has(input:checked) .tf__key { background: var(--deep); border-color: var(--deep); color: #fff; }
 .tf__opt:has(input:checked) > svg { visibility: visible; }
-.tf__opt:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(11, 58, 64, .2); }
+.tf__opt:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(59, 15, 122, .2); }
 .tf__opt.is-picked { animation: tf-blink .16s 2; }
-@keyframes tf-blink { 50% { background: rgba(11, 58, 64, .2); } }
+@keyframes tf-blink { 50% { background: rgba(59, 15, 122, .2); } }
 .tf__input {
   display: block; width: 100%; max-width: 680px;
   border: 0; border-bottom: 2px solid var(--card-ink); border-radius: 0; background: transparent;
   padding: 8px 0 10px; font: 400 clamp(1.25rem, 2.8vw, 1.7rem) var(--body); line-height: 1.35; color: var(--card-ink);
 }
 textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 18px); }
-.tf__input::placeholder { color: #a9c2c0; }
+.tf__input::placeholder { color: #b3a6cc; }
 .tf__input:focus { outline: none; border-bottom-color: var(--deep); }
 /* Phone question (waiting list): flag button + number, and a searchable country list that opens under them. */
 .tf__phone { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 14px; max-width: 680px; }
@@ -604,16 +613,16 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 .tf__cc:focus-visible { outline: none; border-bottom-color: var(--deep); }
 .tf__cc svg { width: 18px; height: 18px; transition: transform .2s ease; }
 .tf__cc[aria-expanded="true"] svg { transform: rotate(180deg); }
-.tf__cc img, .tf__ccopt img { flex: none; width: 30px; height: 22px; border-radius: 4px; object-fit: cover; box-shadow: 0 0 0 1px rgba(14, 28, 31, .18); }
+.tf__cc img, .tf__ccopt img { flex: none; width: 30px; height: 22px; border-radius: 4px; object-fit: cover; box-shadow: 0 0 0 1px rgba(26, 16, 48, .18); }
 .tf__ccpanel {
   max-width: 440px; padding: 12px; margin-top: -8px;
   border: 1px solid var(--field-line); border-radius: 14px; background: var(--card);
-  box-shadow: 0 16px 40px rgba(14, 28, 31, .12);
+  box-shadow: 0 16px 40px rgba(26, 16, 48, .12);
 }
 .tf__ccsearch { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 2px solid var(--card-ink); color: var(--card-ink); }
 .tf__ccsearch input { flex: 1; min-width: 0; padding: 8px 0; border: 0; background: none; font: 400 1.15rem var(--body); color: var(--card-ink); }
 .tf__ccsearch input:focus { outline: none; }
-.tf__ccsearch input::placeholder { color: #a9c2c0; }
+.tf__ccsearch input::placeholder { color: #b3a6cc; }
 .tf__ccsearch svg { flex: none; width: 20px; height: 20px; }
 .tf__cclist { display: grid; gap: 8px; max-height: 300px; overflow-y: auto; margin: 0; padding: 2px 6px 2px 2px; list-style: none; }
 .tf__ccopt {
@@ -727,7 +736,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
   color: var(--dc-fg);
   border-radius: 14px;
   padding-block: 8px;
-  box-shadow: 0 0 0 1px rgba(47, 224, 192, .4), 0 0 46px rgba(47, 224, 192, .22);
+  box-shadow: 0 0 0 1px rgba(192, 132, 252, .4), 0 0 46px rgba(192, 132, 252, .22);
   font-size: .92rem;
 }
 .msg { display: flex; gap: 12px; padding: 12px 16px; }
@@ -735,7 +744,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 .msg .avatar { width: 40px; height: 40px; }
 .msg__body { min-width: 0; flex: 1; }
 .msg__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.msg__name { font-weight: 700; color: var(--role, #7ff0dc); }
+.msg__name { font-weight: 700; color: var(--role, #d8b4fe); }
 .role {
   font-size: .64rem; font-weight: 700; letter-spacing: .04em;
   background: rgba(255, 255, 255, .08); color: var(--dc-name);
@@ -792,8 +801,8 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
   display: flex; gap: 12px; align-items: center;
   padding: 14px 16px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #0f4a4f, #082527);
-  border: 1px solid rgba(47, 224, 192, .3);
+  background: linear-gradient(135deg, #4c1d95, #1e0b45);
+  border: 1px solid rgba(192, 132, 252, .3);
   box-shadow: 0 16px 40px rgba(0, 0, 0, .5);
   color: var(--fg);
   font-size: .88rem;
@@ -822,21 +831,18 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 <main class="view" id="view-optin" data-view="optin">
   <div class="wrap wrap--narrow">
 
-    <p class="eyebrow">ES &amp; NQ Futures · <b>Order Flow</b> · Built For Traders With A 9–5</p>
-
     <h1 class="headline">
-      Discover The <span class="hl">Replay&#8209;To&#8209;Live Process</span> For Traders Who Can Read Order Flow On Replay…
-      <span class="hl">But Freeze When It’s Live</span>
+      Discover My <span class="hl">Order Flow Strategy</span> That <span class="nowrap">9-5</span> Traders Are Using To
+      <span class="hl">Stop Blowing Prop Firm Accounts</span> On <span class="nowrap">NQ &amp; ES</span>
     </h1>
 
-    <!-- Spots for the 1-on-1 mentorship. Keep CONFIG.spotsLeft true: it's a promise to the reader. -->
-    <div class="scarcity" aria-label="1-on-1 spots remaining">
+    <div class="scarcity" aria-label="Spots remaining">
       <div class="scarcity__row">
-        <span class="pill">1-on-1 mentorship</span>
-        <span class="spots"><span data-fill="spotsLeft">3</span> Spots Left This Month</span>
+        <span class="pill">Limited free access</span>
+        <span class="spots"><span data-fill="spotsLeft">3</span> Spots Left</span>
       </div>
       <div class="meter"><span id="meter"></span></div>
-      <small><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg><span><span data-fill="coach">Mert</span> only coaches a few traders 1-on-1 at a time</span></small>
+      <small><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Spots moving fast…</small>
     </div>
 
     <form class="card optin" id="optin-form" novalidate>
@@ -868,19 +874,20 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
       </div>
       <p class="error" id="optin-error" role="alert" hidden></p>
       <button class="btn-gold" type="submit" id="optin-submit">Submit For Discord Access</button>
-      <p class="reassure">Your invite goes to your email + SMS. The full replay-to-live breakdown is pinned inside.</p>
+      <p class="reassure">The breakdown of the strategy is pinned in the Discord</p>
     </form>
 
-    <!-- Who this is for: the pains Mert's buyers describe in their own words (see README → "Why the copy says what it says") -->
-    <section class="pains" aria-labelledby="pains-title">
-      <h2 class="sub" id="pains-title">Sound <span class="hl">Familiar?</span></h2>
-      <div class="pains__grid">
-        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 7 4-14 3 7h4"/></svg><span>You call the move on replay. Live, you hesitate… then chase it.</span></p>
-        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v6h6"/><path d="M20 20v-6h-6"/><path d="M5.6 15a8 8 0 0 0 13.2 3M18.4 9A8 8 0 0 0 5.2 6"/></svg><span>You’ve passed evals and blown them. The reset fees keep stacking up.</span></p>
-        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 11v6h-6"/></svg><span>One bad day undoes two good weeks, and you know it isn’t the strategy.</span></p>
-        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2"/><path d="M8 7h7M8 11h5"/></svg><span>You’ve bought the courses and the indicators. You don’t need more information.</span></p>
+    <!-- What's inside the free Discord: channels listed in CONFIG.discordChannels (match them to the real server) -->
+    <section class="inside" aria-labelledby="inside-title">
+      <h2 class="sub" id="inside-title">Your <span class="hl">Discord Invite</span> Gets Sent To Your <span class="hl">Email&nbsp;+&nbsp;SMS</span></h2>
+      <div class="server">
+        <div class="server__head">
+          <span class="server__icon" aria-hidden="true">M</span>
+          <div><strong><span data-fill="brand">Mert</span>Futures</strong><small><i></i>Free community · NQ &amp; ES order flow</small></div>
+        </div>
+        <p class="server__label">Text channels</p>
+        <ul class="server__list" id="server-list"></ul>
       </div>
-      <p class="pains__turn">The prop firm rules keep changing. <span class="hl">The auction doesn’t.</span></p>
     </section>
 
     <!-- Proof: shows only once PROOF in the script has entries (images in assets/mert/proof/) -->
@@ -914,8 +921,8 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
   </div>
   <div class="wrap">
 
-    <h1 class="sub intro hook" data-fit="intro">You Don’t Need <span class="hl">More Information</span>. You Need To <span class="hl">Execute It&nbsp;Live.</span></h1>
-    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch This Video To See The <b>Replay&#8209;To&#8209;Live Process</b> I Coach <b>1-On-1</b> On <b>ES&nbsp;&amp;&nbsp;NQ</b>.</h2>
+    <h1 class="sub intro hook" data-fit="intro">The <span class="hl">Real Reason</span> You Keep Blowing Prop Firm Accounts <span class="hl">(It’s&nbsp;Not&nbsp;Your&nbsp;Strategy)</span></h1>
+    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch How I <b>Fixed It</b> And Started Trading <b>NQ&nbsp;&amp;&nbsp;ES</b> Off <b>Order&nbsp;Flow</b>, Not&nbsp;Guesswork</h2>
 
     <div class="video" data-video="vsl">
       <div class="video__ph">
@@ -927,7 +934,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
       <div class="video__bar"><span></span></div>
     </div>
 
-    <h2 class="step" data-fit><b>Step #2</b> Fill Out This Application To Apply For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship</h2>
+    <h2 class="step" data-fit><b>Step #2</b> Fill Out This Application To Apply For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow Elite</span> Mentorship</h2>
 
     <section class="card booker" aria-label="Strategy call application">
       <div class="booker__steps">
@@ -1029,8 +1036,8 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
   </div>
   <div class="wrap">
 
-    <h1 class="sub intro hook" data-fit="intro">You Don’t Need <span class="hl">More Information</span>. You Need To <span class="hl">Execute It&nbsp;Live.</span></h1>
-    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch This Video To See The <b>Replay&#8209;To&#8209;Live Process</b> I Coach <b>1-On-1</b> On <b>ES&nbsp;&amp;&nbsp;NQ</b>.</h2>
+    <h1 class="sub intro hook" data-fit="intro">The <span class="hl">Real Reason</span> You Keep Blowing Prop Firm Accounts <span class="hl">(It’s&nbsp;Not&nbsp;Your&nbsp;Strategy)</span></h1>
+    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch How I <b>Fixed It</b> And Started Trading <b>NQ&nbsp;&amp;&nbsp;ES</b> Off <b>Order&nbsp;Flow</b>, Not&nbsp;Guesswork</h2>
 
     <div class="video" data-video="vsl">
       <div class="video__ph">
@@ -1041,6 +1048,8 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
       </div>
       <div class="video__bar"><span></span></div>
     </div>
+
+    <h2 class="step" data-fit><b>Step #2</b> Fill Out This Application To Apply For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow Elite</span> Mentorship</h2>
 
     <section class="card tf" id="tf" aria-label="Strategy call application">
       <div class="tf__progress" aria-hidden="true"><span id="tf-bar"></span></div>
@@ -1080,9 +1089,8 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 <main class="view" id="view-waitlist" data-view="waitlist" hidden>
   <div class="wrap">
 
-    <p class="eyebrow">ES &amp; NQ Futures · <b>Order Flow</b> · 1-On-1</p>
-    <h1 class="headline">Join The <span class="hl"><span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship Waiting&nbsp;List</span></h1>
-    <p class="waitlist__text"><span data-fill="coach">Mert</span> only coaches a few traders 1-on-1 at a time. Answer a few quick questions and you’ll be the first to know when a spot opens&nbsp;up.</p>
+    <h1 class="headline">Join The <span class="hl"><span data-fill="program">Order Flow Elite</span> Waiting&nbsp;List</span></h1>
+    <p class="waitlist__text">Answer a few quick questions to get on the list. You’ll be the first to know when a spot opens&nbsp;up.</p>
 
     <div id="waitlist-form"></div>
 
@@ -1109,7 +1117,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 <main class="view" id="view-notqualified" data-view="notqualified" hidden>
   <div class="wrap wrap--narrow">
 
-    <h1 class="headline">Unfortunately, You <span class="hl">Don’t Qualify</span> For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship Right&nbsp;Now</h1>
+    <h1 class="headline">Unfortunately, You <span class="hl">Don’t Qualify</span> For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow Elite</span> Mentorship Right&nbsp;Now</h1>
     <p class="nq">But don’t worry: join the free Discord and <b>keep learning the auction with us for free.</b></p>
     <a class="btn-gold nq__btn" id="nq-discord" href="#" hidden>Join The Free Discord</a>
     <p class="nq__note" id="nq-check">Your Discord invite is in your email + SMS.</p>
@@ -1141,7 +1149,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
   <!-- Small announcement line at the very top -->
   <div class="announce">
     <h1 class="announce__text">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--gold)"/><path d="M12 9v5m0 3v.5" stroke="#04080b" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--gold)"/><path d="M12 9v5m0 3v.5" stroke="#07020f" stroke-width="2.4" stroke-linecap="round"/></svg>
       <span>Wait! Your call is <u>not</u> confirmed yet…</span>
     </h1>
   </div>
@@ -1179,7 +1187,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 
     <div class="faqs">
       <section class="faq">
-        <h3>What’s Inside The <span data-fill="program">Order Flow</span> Mentorship?</h3>
+        <h3>What’s Inside The <span data-fill="program">Order Flow Elite</span> Mentorship?</h3>
         <div class="video" data-video="faqInside">
           <div class="video__ph">
             <span class="video__tag">Video placeholder</span>
@@ -1189,7 +1197,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
         </div>
       </section>
       <section class="faq">
-        <h3>Is <span data-fill="brand">Mert</span> A Real Trader Or Just A Course Seller?</h3>
+        <h3>Is <span data-fill="brand">Mert</span> Legit?</h3>
         <div class="video" data-video="faqLegit">
           <div class="video__ph">
             <span class="video__tag">Video placeholder</span>
@@ -1230,7 +1238,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
       </section>
     </div>
 
-    <h2 class="step" data-fit="booked"><b>Step #3:</b> See How The <span class="hl">12 Weeks</span> Work</h2>
+    <h2 class="step" data-fit="booked"><b>Step #3:</b> See What Your <span class="hl">12 Weeks</span> Look Like</h2>
 
     <!-- The two phases of the mentorship. Check the bullet points with Mert before going live. -->
     <div class="weeks">
@@ -1260,7 +1268,7 @@ textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 1
 
     <!-- Results gallery (listed in PROOF in the script below); shows once PROOF has entries -->
     <section class="receipts" aria-label="Results" data-proof-section hidden>
-      <h2 class="step" data-fit="booked"><b>Step #4:</b> See What Traders Are Saying</h2>
+      <h2 class="step" data-fit="booked"><b>Step #4:</b> See The Results From Me And The Community</h2>
       <div class="receipts__grid" data-proof></div>
     </section>
 
@@ -1301,11 +1309,10 @@ const CONFIG = {
   leadSheetUrl: "",
 
   brand: "Mert",
-  program: "Order Flow",        // mentorship name: "Apply For The 1-1 Order Flow Mentorship"
+  program: "Order Flow Elite",  // mentorship name: "Apply For The 1-1 Order Flow Elite Mentorship"
   coach: "Mert",
   instagramHandle: "@mertfutures",
   instagramUrl: "https://www.instagram.com/mertfutures/",
-  // 1-on-1 spots shown on page 1. Keep this true: the bar is a promise to the reader, not decoration.
   spotsLeft: 3,
   spotsFill: 88,               // % of the scarcity bar that's filled
 
@@ -1328,6 +1335,14 @@ const CONFIG = {
   // Investment answers that don't qualify for a call (V1 and V2 wording). These applicants are sent to
   // /not-qualified instead of the calendar; their answers still go to the sheet. The mentorship is $2,000.
   disqualify: ["Under $1,000", "I want to, but don't have the resources to fund my goals"],
+
+  // The Discord preview under the page 1 form. Rename these to match the real server's channels.
+  discordChannels: [
+    { name: "strategy-breakdown", text: "The full order flow strategy, step by step", pinned: true },
+    { name: "nq-es-levels", text: "Key levels marked before the New York open" },
+    { name: "trade-recaps", text: "Real trades broken down: entries, exits and mistakes" },
+    { name: "ask-mert", text: "Drop your charts and questions" }
+  ],
 
   // Discord invite link for the buttons on /not-qualified and the waiting-list thank-you.
   // Leave "" to tell them to check their email + SMS instead.
@@ -1447,6 +1462,8 @@ $$("[data-fill]").forEach(el => { if (CONFIG[el.dataset.fill] != null) el.textCo
 $("#meter").style.setProperty("--fill", CONFIG.spotsFill + "%");
 if (CONFIG.guarantee) { $("#promise").innerHTML = CONFIG.guarantee; $("#promise").hidden = false; }
 if (CONFIG.instagramUrl) $("#nq-instagram").href = CONFIG.instagramUrl;
+// Discord preview under the page 1 form
+$("#server-list").innerHTML = CONFIG.discordChannels.map(c => `<li class="server__ch"><span class="server__hash" aria-hidden="true">#</span><div><b>${c.name}</b><span>${c.text}</span></div>${c.pinned ? '<span class="server__pin">Pinned</span>' : ""}</li>`).join("");
 
 // Swap placeholders for real embeds when a URL is configured (only on the page being shown).
 // Vimeo videos play with no Vimeo controls at all (no title, name, picture, logo or share buttons):

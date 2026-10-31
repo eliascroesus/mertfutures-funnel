@@ -1,0 +1,2411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MertFutures Order Flow Funnel</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- Link preview (iMessage, WhatsApp, Instagram/Facebook, X, Discord…). og:image must be a full URL;
+     update the domain here if the site ever moves. -->
+<meta name="description" content="ES &amp; NQ order flow mentorship for traders who can read it on replay but freeze live. Free Discord, 1-on-1 coaching with Mert.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MertFutures">
+<meta property="og:title" content="You Can Read It On Replay. Now Execute It Live.">
+<meta property="og:description" content="ES &amp; NQ order flow mentorship for traders who can read it on replay but freeze live. Free Discord, 1-on-1 coaching with Mert.">
+<meta property="og:url" content="https://mertfutures.com/">
+<meta property="og:image" content="https://mertfutures.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MertFutures: ES and NQ order flow, from replay to live execution">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mertfutures.com/og-image.jpg">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://player.vimeo.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;1,700;1,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<script>
+  // Pick the page from the URL before anything draws, so /apply never flashes page 1.
+  (function () {
+    var pages = { "/discord": "optin", "/apply": "apply", "/apply-2": "apply2", "/booked": "booked", "/not-qualified": "notqualified", "/waitlist": "waitlist" };
+    var path = location.pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "").replace(/(.)\/+$/, "$1");
+    document.documentElement.setAttribute("data-page", pages[path] || "optin");
+  })();
+</script>
+<style>
+html:not([data-page="optin"]) #view-optin,
+html:not([data-page="apply"]) #view-apply,
+html:not([data-page="apply2"]) #view-apply2,
+html:not([data-page="booked"]) #view-booked,
+html:not([data-page="notqualified"]) #view-notqualified,
+html:not([data-page="waitlist"]) #view-waitlist { display: none; }
+/* Layout: three funnel steps in one file (opt-in → VSL + application → booked), each a
+   black-to-deep-teal band with a centred column, white cards for forms, gold for the one action. */
+:root {
+  color-scheme: dark;
+  --ink: #04080b;          /* top of every band */
+  --deep: #0b3a40;         /* bottom of every band */
+  --fg: #f2fbfa;
+  --muted: #9fc6c2;
+  --accent: #2fe0c0;       /* highlighted words in headlines */
+  --gold: #f7c948;
+  --gold-2: #e6a417;
+  --gold-ink: #241a02;
+  --card: #ffffff;
+  --card-ink: #0e1c1f;
+  --card-muted: #60767a;
+  --line: #dbe6e7;
+  --field: #eef0f3;         /* empty input box: neutral grey */
+  --field-line: #d3d7dd;
+  --field-done: #ffffff;    /* once it's filled in or picked */
+  --danger: #d93a3a;
+  --dc-bg: #2b2d31;        /* Discord message card */
+  --dc-fg: #dbdee1;
+  --dc-muted: #949ba4;
+  --dc-name: #f2f3f5;
+  --dc-feed: #1e1f22;      /* Discord channel background */
+  --ph: #0c2629;           /* video placeholder fill */
+  --ph-line: rgba(47, 224, 192, .12);
+
+  --form-text: 1rem;       /* every question, answer and dropdown option in the forms */
+
+  --display: "Montserrat", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Bands & column ---------- */
+.view {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--ink) 0, var(--deep) 1100px) var(--deep);
+  padding-block: 28px 56px;
+}
+.wrap {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.wrap--narrow { max-width: 760px; }
+
+
+/* ---------- Type ---------- */
+/* position: relative draws headings above the shadow of the video or card just before them. */
+h1, h2, h3 { position: relative; font-family: var(--display); margin: 0; text-wrap: balance; text-align: center; }
+.headline {
+  font-size: clamp(1.7rem, 4.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  max-width: 30ch;
+}
+.hl { color: var(--accent); }
+.eyebrow {
+  margin: 0 0 -12px; text-align: center; text-wrap: balance;
+  font: 700 .74rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.eyebrow b { color: var(--accent); font-weight: 700; }
+.sub {
+  font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+/* Wide screens: headings marked data-fit stay on one line; fitHeadings() shrinks the font until they fit. */
+@media (min-width: 761px) { [data-fit] { max-width: none; white-space: nowrap; } }
+/* Phones: fill each line to the full column width instead of evening the lines out (balance). */
+@media (max-width: 760px) { [data-fit] { text-wrap: wrap; } }
+.step {
+  color: #fff;
+  font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1.25;
+}
+.step b { color: var(--accent); font-weight: 800; }
+/* Page 2: the three lines above the video are always the same size. On wide screens they share
+   data-fit="intro", so when the longest one has to shrink to fit, the others shrink with it. */
+.intro { font-size: clamp(1.1rem, 2.6vw, 1.45rem); }
+/* Page 2: the hook is the main headline, and the step titles stand upright like on /booked. */
+#view-apply .step, #view-apply2 .step { font-style: normal; }
+.announce__text .hl { color: var(--accent); }
+@media (max-width: 760px) {
+  .hook { font-size: clamp(1.4rem, 6vw, 1.7rem); line-height: 1.2; }
+  #view-apply .step, #view-apply2 .step { font-size: clamp(1.02rem, 4.4vw, 1.2rem); }
+}
+.nowrap { white-space: nowrap; }
+.announce {
+  margin: -14px 0 14px;   /* closer to the top of the page than the rest of the content */
+  display: flex; justify-content: center;
+  padding: 0 var(--gutter-r) 0 var(--gutter-l);
+  color: #fff;
+}
+.announce__text {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .8rem; font-weight: 700; line-height: 1.2;
+  text-transform: uppercase; letter-spacing: .02em;
+}
+.announce__text svg { flex: none; width: 1.3em; height: 1.3em; }
+.announce__text u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+/* Desktop: the /booked warning is bigger so it can't be missed. */
+@media (min-width: 761px) { #view-booked .announce { margin: -6px 0 22px; } #view-booked .announce__text { font-size: 1.1rem; gap: 10px; } }
+@media (max-width: 560px) {
+  .announce { margin-top: -4px; }
+  .announce__text { font-size: min(.7rem, 3.3vw); gap: 5px; }
+}
+
+/* ---------- Scarcity bar ---------- */
+.scarcity {
+  width: 100%; max-width: 440px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid; gap: 8px;
+}
+.scarcity__row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.pill {
+  font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid rgba(47, 224, 192, .55); color: var(--accent);
+  border-radius: 999px; padding: 3px 9px;
+}
+.spots { font-weight: 700; font-size: .85rem; font-variant-numeric: tabular-nums; }
+.meter { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.meter span {
+  display: block; height: 100%; width: var(--fill, 88%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #a7f3e4);
+  animation: fill 1.6s cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes fill { from { width: 62%; } }
+.scarcity small { color: var(--muted); font-size: .72rem; display: flex; align-items: center; gap: 4px; }
+.scarcity small svg { width: 12px; height: 12px; color: var(--gold); }
+
+/* ---------- White form card ---------- */
+.card {
+  width: 100%;
+  background: var(--card);
+  color: var(--card-ink);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+}
+.optin { max-width: 560px; padding: 24px clamp(18px, 4vw, 30px) 18px; display: grid; gap: 12px; }
+.optin h2 { font-size: clamp(1.35rem, 3.6vw, 1.75rem); font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 10px; }
+.optin h2 svg { width: 1.1em; height: 1.1em; color: var(--deep); }
+
+.field { display: grid; gap: 4px; }
+.field label { font-size: var(--form-text); font-weight: 700; line-height: 1.5; color: var(--card-ink); }
+.field label .req { color: var(--danger); }
+.input, .select {
+  width: 100%;
+  font: inherit; font-size: var(--form-text);
+  color: var(--card-ink);
+  background: var(--field);
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-height: 46px;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.input::placeholder { color: #8a9099; }
+.input:focus, .input:not(:placeholder-shown) { background: var(--field-done); }
+.input:focus, .select:focus { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(11, 58, 64, .15); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+/* Custom dropdown: the real <select> stays in the form (hidden) and holds the value. */
+.dd { position: relative; }
+.dd select { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.dd__btn {
+  width: 100%; min-height: 46px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font: inherit; font-size: var(--form-text); text-align: left;
+  color: var(--card-ink); background: var(--field-done);
+  border: 1px solid var(--field-line); border-radius: 10px;
+  padding: 11px 14px; cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.dd__btn.is-empty { background: var(--field); }
+.dd__btn:hover { border-color: #b9bec6; }
+.dd__btn.is-empty .dd__value { color: #8a9099; }
+.dd__btn:focus-visible, .dd.is-open .dd__btn { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(11, 58, 64, .15); }
+.dd__chev { flex: none; width: 18px; height: 18px; color: var(--card-muted); transition: transform .2s ease; }
+.dd.is-open .dd__chev { transform: rotate(180deg); }
+.dd__list {
+  position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px);
+  margin: 0; padding: 6px; list-style: none;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(14, 28, 31, .18);
+  max-height: 280px; overflow-y: auto;
+}
+.dd.is-up .dd__list { top: auto; bottom: calc(100% + 6px); }   /* not enough room below inside the card */
+.dd__opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  font-size: var(--form-text); color: var(--card-ink); cursor: pointer;
+}
+.dd__opt.is-active { background: #e9f6f4; }
+.dd__opt[aria-selected="true"] { color: var(--deep); font-weight: 700; }
+.dd__opt svg { flex: none; width: 16px; height: 16px; visibility: hidden; }
+.dd__opt[aria-selected="true"] svg { visibility: visible; }
+.phone { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.phone .select { width: auto; padding-right: 8px; }
+.error { color: var(--danger); font-size: .8rem; min-height: 0; margin: 0; }
+
+.btn-gold {
+  width: 100%;
+  font: inherit; font-family: var(--display); font-weight: 800; font-size: 1rem;
+  color: var(--gold-ink);
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  border: 0; border-radius: 12px;
+  padding: 15px 18px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(230, 164, 23, .35), inset 0 1px 0 rgba(255, 255, 255, .5);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(230, 164, 23, .45), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.btn-gold:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.reassure { margin: -2px 0 0; text-align: center; font-size: .8rem; font-weight: 500; color: var(--card-muted); }
+.legal { text-align: center; font-size: .75rem; color: var(--card-muted); }
+.legal a { color: var(--card-muted); }
+
+/* ---------- Discord-style proof wall ---------- */
+.proof { width: 100%; columns: 2 300px; column-gap: 16px; }
+.dc {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  background: var(--dc-bg);
+  color: var(--dc-fg);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: .9rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+.dc__head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.avatar {
+  flex: none; width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: .85rem; color: #fff;
+  background: var(--av, #5865f2);
+}
+.dc__name { color: var(--dc-name); font-weight: 700; }
+.dc__time { color: var(--dc-muted); font-size: .75rem; margin-left: 4px; }
+.dc p { margin: 0 0 10px; }
+.mention { background: rgba(88, 101, 242, .3); color: #c9cdfb; border-radius: 3px; padding: 0 3px; }
+.shot {
+  display: grid; place-items: center; text-align: center;
+  height: var(--h, 170px);
+  border: 1.5px dashed rgba(219, 222, 225, .28);
+  border-radius: 8px;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .03) 0 10px, transparent 10px 20px);
+  color: var(--dc-muted);
+  font-size: .78rem; font-weight: 500;
+  padding: 10px;
+}
+.shot svg { width: 26px; height: 26px; display: block; margin: 0 auto 6px; opacity: .7; }
+.reacts { display: flex; gap: 6px; margin-top: 10px; }
+.reacts span {
+  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px; padding: 1px 8px; font-size: .78rem; color: var(--dc-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Results gallery ---------- */
+.receipts { width: 100%; display: grid; gap: 18px; justify-items: center; }
+.receipts__grid { width: 100%; columns: 2 280px; column-gap: 14px; }
+.receipt {
+  break-inside: avoid;
+  margin: 0 0 14px;
+  background: #071a1c;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .4);
+}
+.receipt img, .receipt video { display: block; width: 100%; max-width: 100%; height: auto; }
+.receipt figcaption { padding: 10px 14px; font-family: var(--display); font-weight: 700; font-size: .95rem; }
+.receipt figcaption b { color: var(--accent); font-weight: 800; }
+
+/* ---------- "Sound familiar?" cards (page 1 and /waitlist) ---------- */
+.pains { width: 100%; display: grid; gap: 16px; justify-items: center; }
+.pains__grid { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) { .pains__grid { grid-template-columns: 1fr; } }
+.pain {
+  margin: 0; display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 16px; border-radius: 14px;
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1);
+  font-size: .98rem; line-height: 1.45;
+}
+.pain svg { flex: none; width: 22px; height: 22px; margin-top: 1px; color: var(--accent); }
+.pains__turn { margin: 4px 0 0; max-width: 36ch; text-align: center; text-wrap: balance; font: 800 clamp(1.1rem, 2.8vw, 1.4rem)/1.3 var(--display); }
+
+/* ---------- How the 12 weeks work (/booked) ---------- */
+.weeks { width: 100%; max-width: 760px; display: grid; gap: 14px; }
+.week {
+  display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start;
+  padding: 18px 20px; border-radius: 16px;
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12);
+}
+.week__tag {
+  grid-row: span 3; align-self: start;
+  font: 800 .72rem var(--display); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+  color: var(--ink); background: var(--accent); border-radius: 999px; padding: 5px 11px;
+}
+.week h3 { text-align: left; font-size: clamp(1.05rem, 2.6vw, 1.25rem); font-weight: 800; }
+.week p { margin: 0; color: var(--muted); font-size: .98rem; }
+.week ul { margin: 4px 0 0; padding-left: 18px; color: var(--fg); font-size: .95rem; }
+.week li + li { margin-top: 4px; }
+@media (max-width: 560px) { .week { grid-template-columns: 1fr; } .week__tag { grid-row: auto; justify-self: start; } }
+.promise {
+  width: 100%; max-width: 760px; margin: 0; padding: 16px 20px; border-radius: 16px;
+  border: 1px dashed rgba(247, 201, 72, .6); background: rgba(247, 201, 72, .06);
+  text-align: center; font-size: 1rem;
+}
+.promise b { color: var(--gold); }
+/* Results images open bigger when tapped (see #zoom). */
+.receipt__zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.zoom { padding: 0; border: 0; background: none; max-width: 96vw; max-height: 92vh; overflow: visible; }
+.zoom::backdrop { background: rgba(0, 0, 0, .86); }
+.zoom img { display: block; width: auto; height: auto; max-width: 96vw; max-height: 92vh; border-radius: 10px; cursor: zoom-out; }
+.zoom__close {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px));
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .16); color: #fff; cursor: pointer;
+}
+.zoom__close svg { width: 18px; height: 18px; }
+
+/* ---------- Video placeholder ---------- */
+.video {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  overflow: hidden;
+  background:
+    linear-gradient(var(--ph-line) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--ph-line) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(ellipse at center, #15454a 0%, var(--ph) 70%);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+}
+.video iframe, .video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video.has-embed { background: #000; }
+
+/* Our own controls over Vimeo videos */
+.vp__hit { position: absolute; inset: 0; z-index: 1; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.vp__big {
+  position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%;
+  width: clamp(58px, 11vw, 88px); aspect-ratio: 1; border-radius: 50%;
+  background: var(--accent); color: var(--ink);
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 10px rgba(47, 224, 192, .18);
+  pointer-events: none; opacity: 0; transition: opacity .2s ease;
+}
+.vp__big svg { width: 42%; height: 42%; margin-left: 8%; }
+.vp.is-paused .vp__big { opacity: 1; }
+.vp:has(.vp__listen:not([hidden])) .vp__big { opacity: 0; }
+.vp__bar {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: 4px;
+  padding: 24px 8px 4px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .6));
+  opacity: 0; pointer-events: none; transition: opacity .25s ease;
+}
+.vp.is-paused .vp__bar, .vp.show-ui .vp__bar { opacity: 1; pointer-events: auto; }
+.vp:has(.vp__listen:not([hidden])) .vp__bar { opacity: 0; pointer-events: none; }
+.vp__btn {
+  flex: none; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 6px;
+  background: transparent; color: #fff; cursor: pointer;
+  display: grid; place-items: center;
+}
+.vp__btn:hover { background: rgba(255, 255, 255, .14); }
+.vp__btn svg { width: 20px; height: 20px; }
+.vp__toggle svg:last-child, .vp.is-paused .vp__toggle svg:first-child { display: block; }
+.vp__toggle svg:first-child, .vp.is-paused .vp__toggle svg:last-child { display: none; }
+.vp__mute svg:last-child, .vp.is-muted .vp__mute svg:first-child { display: none; }
+.vp.is-muted .vp__mute svg:last-child { display: block; }
+.vp__track { flex: 1; padding: 14px 6px; cursor: pointer; }
+.vp__rail { display: block; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, .28); overflow: hidden; }
+.vp__fill { display: block; height: 100%; width: 0; background: var(--accent); }
+.vp .vp__listen { z-index: 3; }
+.vp:fullscreen { border-radius: 0; box-shadow: none; }
+.video__ph {
+  position: absolute; inset: 0;
+  display: grid; place-items: center; align-content: center; gap: 12px;
+  text-align: center; padding: 16px;
+}
+.video__tag {
+  font-family: var(--display); font-weight: 800; font-size: .7rem;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(47, 224, 192, .5); border-radius: 999px; padding: 4px 12px;
+}
+.video__play {
+  width: clamp(58px, 11vw, 88px); aspect-ratio: 1;
+  border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--ink);
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 10px rgba(47, 224, 192, .18);
+  transition: transform .15s ease;
+}
+.video__play:hover { transform: scale(1.06); }
+.video__play svg { width: 42%; height: 42%; margin-left: 8%; }
+.video__name { font-family: var(--display); font-weight: 700; font-size: clamp(.9rem, 2.2vw, 1.15rem); }
+.video__meta { color: var(--muted); font-size: .8rem; }
+.video__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(255, 255, 255, .12); }
+.video__bar span { display: block; height: 100%; width: 14%; background: var(--accent); }
+.video.is-playing .video__play { background: var(--gold); }
+.video:has(.autoplay:not([hidden])) .video__ph { visibility: hidden; }
+
+.autoplay {
+  position: absolute; z-index: 2;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(78%, 340px);
+  display: grid; justify-items: center; gap: 8px;
+  padding: 18px 14px;
+  font: inherit; color: #fff; cursor: pointer;
+  background: rgba(15, 118, 110, .92);
+  border: 2px solid rgba(255, 255, 255, .85);
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .4);
+}
+.autoplay strong { font-family: var(--display); font-weight: 800; font-size: clamp(.95rem, 2.6vw, 1.25rem); }
+.autoplay span { font-family: var(--display); font-weight: 700; font-size: clamp(.85rem, 2.2vw, 1.05rem); }
+.autoplay svg { width: clamp(44px, 9vw, 64px); height: auto; }
+
+/* ---------- Apply: form + calendar ---------- */
+.booker { max-width: 860px; overflow: hidden; }
+.booker__steps {
+  display: flex; justify-content: center; gap: 22px;
+  font-size: .78rem; color: var(--card-muted);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+}
+.booker__steps span { display: inline-flex; align-items: center; gap: 6px; }
+.booker__steps i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.booker__steps .on { color: var(--card-ink); font-weight: 700; }
+.booker__steps .on i { background: var(--card-ink); }
+.booker__body { display: grid; grid-template-columns: 1fr 1fr; }
+.booker__form { padding: 20px; display: grid; gap: 14px; align-content: start; border-right: 1px solid var(--line); min-width: 0; }
+.booker__form { --form-text: .875rem; }   /* application form (V1): one smaller size for all of its text */
+.booker__form h3 { text-align: left; font-size: 1.1rem; font-weight: 800; }
+.booker__cal { position: relative; min-width: 0; min-height: 700px; }
+.cal-embed { height: 700px; transition: filter .3s ease; }
+.cal-embed.is-locked { filter: blur(7px); pointer-events: none; user-select: none; }
+.cal__lock {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, .35);
+}
+.cal__msg {
+  width: min(100%, 280px);
+  background: var(--card); color: var(--card-ink);
+  border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(14, 28, 31, .2);
+  padding: 16px 18px; text-align: center;
+  display: grid; gap: 6px; justify-items: center;
+}
+.cal__msg svg { width: 26px; height: 26px; color: var(--deep); }
+.cal__msg strong { font-family: var(--display); font-weight: 800; font-size: 1rem; }
+.cal__msg span { font-size: .85rem; color: var(--card-muted); }
+/* Shown in place of the calendar until a GoHighLevel or Calendly link is set in CONFIG. */
+.cal-ph {
+  height: 100%; min-height: 420px; display: grid; place-items: center; align-content: center; gap: 8px;
+  padding: 24px; text-align: center; color: var(--card-muted); font-size: .9rem;
+  background: repeating-linear-gradient(135deg, #f4f8f8 0 12px, #fff 12px 24px);
+}
+.cal-ph strong { font-family: var(--display); color: var(--card-ink); font-size: 1rem; }
+.cal-ph code { font-size: .8rem; background: var(--field); border-radius: 4px; padding: 1px 5px; }
+
+/* ---------- Apply V2: one question at a time ---------- */
+.tf { max-width: 860px; position: relative; overflow: hidden; }
+.tf__progress { height: 4px; background: var(--line); }
+.tf__progress span { display: block; height: 100%; width: 0; background: var(--deep); transition: width .4s ease; }
+.tf__form { min-height: 460px; display: grid; align-content: center; padding: clamp(28px, 5vw, 56px) clamp(20px, 5vw, 48px) 76px; }
+.tf__step { display: grid; gap: 18px; }
+.tf__step.is-in { animation: tf-in .35s ease both; }
+@keyframes tf-in { from { opacity: 0; transform: translateY(18px); } }
+.tf__head { display: flex; gap: 10px; align-items: baseline; }
+.tf__num {
+  flex: none; display: inline-flex; align-items: center; gap: 3px;
+  font: 700 .85rem var(--display); color: var(--deep);
+}
+.tf__num svg { width: 13px; height: 13px; }
+/* Questions fill the card's width (normal wrapping, not the page's "balance") and scale with the screen;
+   long questions are a step smaller so they don't take over a phone screen. */
+.tf__title {
+  margin: 0; text-align: left; text-wrap: pretty;
+  font-family: var(--body); font-weight: 500; letter-spacing: -.01em;
+  font-size: clamp(1.3rem, .9rem + 1.6vw, 1.75rem); line-height: 1.32; color: var(--card-ink);
+}
+.tf__title--long { font-size: clamp(1.12rem, .85rem + 1.1vw, 1.5rem); }
+.tf__title .req { color: var(--danger); }
+.tf__body { display: grid; gap: 26px; padding-left: 26px; }
+.tf__help { margin: -12px 0 2px; font-size: 1rem; color: var(--card-muted); }
+.tf__help b { color: var(--card-ink); }
+.tf__opts { display: grid; gap: 10px; max-width: 540px; }
+.tf__opt {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 10px; cursor: pointer;
+  border: 1px solid #bfdcd8; background: rgba(11, 58, 64, .04);
+  font-size: 1rem; color: var(--card-ink);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.tf__opt:hover { background: rgba(11, 58, 64, .09); }
+.tf__opt input { position: absolute; opacity: 0; pointer-events: none; }
+.tf__key {
+  flex: none; width: 26px; height: 26px; display: grid; place-items: center;
+  border: 1px solid #bfdcd8; border-radius: 6px; background: var(--card);
+  font: 700 .75rem var(--body); color: var(--deep);
+}
+.tf__opt > svg { flex: none; width: 18px; height: 18px; margin-left: auto; color: var(--deep); visibility: hidden; }
+.tf__opt:has(input:checked) { border-color: var(--deep); background: rgba(11, 58, 64, .1); }
+.tf__opt:has(input:checked) .tf__key { background: var(--deep); border-color: var(--deep); color: #fff; }
+.tf__opt:has(input:checked) > svg { visibility: visible; }
+.tf__opt:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(11, 58, 64, .2); }
+.tf__opt.is-picked { animation: tf-blink .16s 2; }
+@keyframes tf-blink { 50% { background: rgba(11, 58, 64, .2); } }
+.tf__input {
+  display: block; width: 100%; max-width: 680px;
+  border: 0; border-bottom: 2px solid var(--card-ink); border-radius: 0; background: transparent;
+  padding: 8px 0 10px; font: 400 clamp(1.25rem, 2.8vw, 1.7rem) var(--body); line-height: 1.35; color: var(--card-ink);
+}
+textarea.tf__input { resize: none; overflow: hidden; min-height: calc(1.35em + 18px); }
+.tf__input::placeholder { color: #a9c2c0; }
+.tf__input:focus { outline: none; border-bottom-color: var(--deep); }
+/* Phone question (waiting list): flag button + number, and a searchable country list that opens under them. */
+.tf__phone { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 14px; max-width: 680px; }
+.tf__cc {
+  display: flex; align-items: center; gap: 8px; align-self: stretch;
+  padding: 8px 2px 10px 0; border: 0; border-bottom: 2px solid var(--card-ink); border-radius: 0;
+  background: none; color: var(--card-muted); cursor: pointer;
+}
+.tf__cc:focus-visible { outline: none; border-bottom-color: var(--deep); }
+.tf__cc svg { width: 18px; height: 18px; transition: transform .2s ease; }
+.tf__cc[aria-expanded="true"] svg { transform: rotate(180deg); }
+.tf__cc img, .tf__ccopt img { flex: none; width: 30px; height: 22px; border-radius: 4px; object-fit: cover; box-shadow: 0 0 0 1px rgba(14, 28, 31, .18); }
+.tf__ccpanel {
+  max-width: 440px; padding: 12px; margin-top: -8px;
+  border: 1px solid var(--field-line); border-radius: 14px; background: var(--card);
+  box-shadow: 0 16px 40px rgba(14, 28, 31, .12);
+}
+.tf__ccsearch { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 2px solid var(--card-ink); color: var(--card-ink); }
+.tf__ccsearch input { flex: 1; min-width: 0; padding: 8px 0; border: 0; background: none; font: 400 1.15rem var(--body); color: var(--card-ink); }
+.tf__ccsearch input:focus { outline: none; }
+.tf__ccsearch input::placeholder { color: #a9c2c0; }
+.tf__ccsearch svg { flex: none; width: 20px; height: 20px; }
+.tf__cclist { display: grid; gap: 8px; max-height: 300px; overflow-y: auto; margin: 0; padding: 2px 6px 2px 2px; list-style: none; }
+.tf__ccopt {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  border: 1px solid var(--field-line); border-radius: 10px; background: var(--field);
+  font-size: 1rem; color: var(--card-ink); cursor: pointer;
+}
+.tf__ccopt:hover, .tf__ccopt.is-active { border-color: #b9bec6; background: var(--field-done); }
+.tf__ccopt[aria-selected="true"] { border: 2px solid var(--card-ink); background: var(--field-done); padding: 9px 13px; }
+.tf__ccode { margin-left: auto; color: var(--card-muted); font-variant-numeric: tabular-nums; }
+.tf__ccnone { padding: 10px 4px; color: var(--card-muted); }
+.tf__actions { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.tf__ok {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border: 0; border-radius: 8px; cursor: pointer;
+  background: var(--deep); color: #fff; font: 700 1rem var(--display);
+}
+.tf__ok svg { width: 16px; height: 16px; }
+.tf__ok:hover { filter: brightness(1.15); }
+.tf__hint { font-size: .8rem; color: var(--card-muted); }
+@media (hover: none) { .tf__hint { display: none; } }
+.tf__err { margin: 0; font-size: .88rem; font-weight: 600; color: var(--danger); }
+.tf__nav { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 2px; }
+.tf__nav button {
+  width: 38px; height: 34px; display: grid; place-items: center; border: 0; cursor: pointer;
+  background: var(--deep); color: #fff;
+}
+.tf__nav button:first-child { border-radius: 8px 0 0 8px; }
+.tf__nav button:last-child { border-radius: 0 8px 8px 0; }
+.tf__nav button:disabled { opacity: .35; cursor: default; }
+.tf__nav svg { width: 18px; height: 18px; }
+.tf__cal { position: relative; }
+.tf__cal .cal-embed { height: 720px; overflow: hidden; }
+/* Calendly draws ~66px of empty space above its card inside its own frame on desktop. Pull the frame
+   up behind our card's edge so the booking starts right under our header. Tune --cal-crop-top if
+   Calendly ever changes that gap. Phones use Calendly's edge-to-edge layout, so no crop there. */
+@media (min-width: 761px) {
+  .tf__cal .cal-embed { --cal-crop-top: 66px; }
+  .tf__cal .cal-embed iframe { display: block; margin-top: calc(-1 * var(--cal-crop-top)); height: calc(100% + var(--cal-crop-top)) !important; }
+  .tf__cal .cal-embed.is-ghl { --cal-crop-top: 0px; }
+}
+/* While the questions are on screen, Calendly sits behind them fully see-through. Not visibility: hidden:
+   browsers pause drawing inside hidden frames, so it would only finish loading once shown. */
+.tf__cal.is-waiting { position: absolute; left: 0; right: 0; top: 4px; opacity: 0; pointer-events: none; }
+.tf__calhead {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 0; padding: 14px 16px; border-bottom: 1px solid var(--line);
+  font: 700 .95rem var(--display); color: var(--deep); text-align: center;
+}
+.tf__calhead svg { flex: none; width: 18px; height: 18px; }
+.tf.is-done .tf__form, .tf.is-done .tf__nav { display: none; }
+/* Waiting list: shown in the card instead of the calendar once the last answer is in. */
+.tf__thanks { display: grid; justify-items: center; gap: 12px; padding: clamp(36px, 6vw, 60px) clamp(20px, 5vw, 48px); text-align: center; color: var(--card-ink); animation: tf-in .4s ease both; }
+.tf__thanks > svg { width: 44px; height: 44px; padding: 9px; border-radius: 50%; background: var(--deep); color: #fff; }
+.tf__thanks h3 { font-size: clamp(1.35rem, 3.4vw, 1.8rem); font-weight: 800; }
+.tf__thanks p { margin: 0; max-width: 42ch; color: var(--card-muted); font-size: 1rem; }
+.tf__thanks .btn-gold { display: block; max-width: 360px; margin-top: 6px; text-decoration: none; }
+.tf.is-done .tf__cal { animation: tf-in .4s ease both; }
+@media (max-width: 560px) { .tf__body { padding-left: 0; } }
+
+/* ---------- Booked ---------- */
+#view-booked .step { font-size: clamp(1.3rem, 3.4vw, 2.05rem); font-style: normal; }
+.confirm { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.confirm__label small { font: inherit; }
+/* Phones: "Confirm In" goes on a small line above the app name so both buttons fit side by side. */
+@media (max-width: 480px) {
+  .confirm__btn { justify-content: flex-start; padding: 11px 12px; gap: 9px; }
+  .confirm__label { display: grid; text-align: left; line-height: 1.15; font-size: 1.02rem; }
+  .confirm__label small { font-size: .7rem; font-weight: 600; color: #5f6368; }
+}
+/* Twice the usual space between the buttons and the Step #2 title. */
+.confirm { margin-bottom: 28px; }
+/* Phones: extra room under the buttons (grows with the screen height), so the thank-you video and the
+   buttons stand out on the first screen before Step #2 starts. */
+@media (max-width: 560px) { .confirm { margin-bottom: max(56px, calc((100svh - 500px) * .6)); } }
+
+.confirm__btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 15px 12px;
+  border-radius: 14px; background: #fff; color: #1f1f1f; text-decoration: none;
+  font-family: var(--display); font-weight: 800; font-size: clamp(.82rem, 3.4vw, 1.08rem); white-space: nowrap;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.confirm__btn:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(0, 0, 0, .45); }
+.confirm__btn svg { flex: none; width: 26px; height: 26px; }
+.faq { width: 100%; display: grid; gap: 14px; justify-items: center; }
+.faq h3 { font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 500; }
+/* Phones: fill each line before wrapping (headings are balanced by default, which pushes words down early). */
+@media (max-width: 560px) { .faq h3 { font-size: calc(1.2rem - 2px); text-wrap: wrap; } }
+.faqs { width: 100%; display: grid; gap: 40px; margin-top: -12px; }   /* a little closer to the Step #2 title */
+
+/* ---------- Booked: video testimonials + screenshot feed ---------- */
+.video--split::before {
+  content: ""; position: absolute; inset: 0 50% 0 0;
+  background: rgba(255, 255, 255, .045);
+  border-right: 2px solid rgba(255, 255, 255, .1);
+}
+.video__who {
+  position: absolute; bottom: 14px;
+  font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); background: rgba(0, 0, 0, .4);
+  padding: 3px 8px; border-radius: 4px;
+}
+.video__who--l { left: 12px; }
+.video__who--r { right: 12px; }
+.more { font-size: clamp(1.15rem, 2.8vw, 1.5rem); font-weight: 800; }
+.feed {
+  width: 100%; max-width: 560px;
+  background: var(--dc-feed);
+  color: var(--dc-fg);
+  border-radius: 14px;
+  padding-block: 8px;
+  box-shadow: 0 0 0 1px rgba(47, 224, 192, .4), 0 0 46px rgba(47, 224, 192, .22);
+  font-size: .92rem;
+}
+.msg { display: flex; gap: 12px; padding: 12px 16px; }
+.msg + .msg { padding-top: 4px; }
+.msg .avatar { width: 40px; height: 40px; }
+.msg__body { min-width: 0; flex: 1; }
+.msg__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.msg__name { font-weight: 700; color: var(--role, #7ff0dc); }
+.role {
+  font-size: .64rem; font-weight: 700; letter-spacing: .04em;
+  background: rgba(255, 255, 255, .08); color: var(--dc-name);
+  border-radius: 4px; padding: 1px 5px;
+}
+.msg__time { color: var(--dc-muted); font-size: .74rem; }
+.msg p { margin: 2px 0 8px; }
+.msg .shot { max-width: 380px; }
+.shot--wide { height: auto; width: 100%; max-width: 100%; aspect-ratio: 16 / 10; background-color: var(--ph); }
+.shots-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 420px; }
+.daysplit {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--dc-muted); font-size: .74rem; font-weight: 700;
+  padding: 10px 16px;
+}
+.daysplit::before, .daysplit::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, .1); }
+
+/* ---------- Not qualified ---------- */
+.nq, .waitlist__text { margin: 0; max-width: 34ch; text-align: center; text-wrap: balance; font-size: clamp(1.05rem, 2.6vw, 1.3rem); line-height: 1.5; }
+.nq b { color: var(--accent); }
+.nq__btn { display: block; max-width: 420px; text-align: center; text-decoration: none; }
+.nq__note { margin: 0; color: var(--muted); text-align: center; }
+.yt {
+  width: 100%; max-width: 520px; margin-top: 8px;
+  display: grid; justify-items: center; gap: 12px; text-align: center;
+  padding: 26px 20px 22px; border-radius: 18px;
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12);
+}
+.yt__logo { width: 46px; height: auto; }
+.yt__title { font-size: clamp(1.2rem, 3.4vw, 1.5rem); font-weight: 800; line-height: 1.25; }
+.yt__text { margin: 0; max-width: 42ch; color: var(--muted); font-size: .98rem; line-height: 1.55; }
+.yt__btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; max-width: 340px; padding: 15px 18px; margin-top: 4px;
+  border-radius: 12px; background: linear-gradient(45deg, #f09433, #e6683c 30%, #dc2743 55%, #cc2366 75%, #bc1888); color: #fff; text-decoration: none;
+  font-family: var(--display); font-weight: 800; font-size: 1rem;
+  box-shadow: 0 10px 26px rgba(220, 39, 67, .3);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.yt__btn:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(220, 39, 67, .4); }
+.yt__btn svg { flex: none; width: 24px; height: auto; }
+.yt__note { margin: 0; color: var(--muted); font-size: .8rem; }
+
+/* ---------- Footer ---------- */
+.foot { max-width: 720px; text-align: center; color: var(--muted); font-size: .72rem; line-height: 1.6; }
+.foot nav { display: flex; justify-content: center; gap: 14px; margin-bottom: 8px; font-size: .78rem; }
+
+/* ---------- Live join toast ---------- */
+.toast {
+  position: fixed; z-index: 20;
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(360px, calc(100vw - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+  display: flex; gap: 12px; align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f4a4f, #082527);
+  border: 1px solid rgba(47, 224, 192, .3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .5);
+  color: var(--fg);
+  font-size: .88rem;
+  transition: opacity .35s ease, transform .35s ease;
+}
+.toast.is-out { opacity: 0; transform: translateY(14px); pointer-events: none; }
+.toast .avatar { width: 34px; height: 34px; background: var(--card); color: var(--deep); }
+.toast p { margin: 0; }
+.toast small { color: var(--muted); }
+.tick { color: #4ade80; font-weight: 700; }
+
+@media (max-width: 760px) {
+  .booker__body { grid-template-columns: 1fr; }
+  .booker__form { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     PAGE 1 — OPT-IN  (/)
+     ===================================================================== -->
+<main class="view" id="view-optin" data-view="optin">
+  <div class="wrap wrap--narrow">
+
+    <p class="eyebrow">ES &amp; NQ Futures · <b>Order Flow</b> · Built For Traders With A 9–5</p>
+
+    <h1 class="headline">
+      Discover The <span class="hl">Replay&#8209;To&#8209;Live Process</span> For Traders Who Can Read Order Flow On Replay…
+      <span class="hl">But Freeze When It’s Live</span>
+    </h1>
+
+    <!-- Spots for the 1-on-1 mentorship. Keep CONFIG.spotsLeft true: it's a promise to the reader. -->
+    <div class="scarcity" aria-label="1-on-1 spots remaining">
+      <div class="scarcity__row">
+        <span class="pill">1-on-1 mentorship</span>
+        <span class="spots"><span data-fill="spotsLeft">3</span> Spots Left This Month</span>
+      </div>
+      <div class="meter"><span id="meter"></span></div>
+      <small><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg><span><span data-fill="coach">Mert</span> only coaches a few traders 1-on-1 at a time</span></small>
+    </div>
+
+    <form class="card optin" id="optin-form" novalidate>
+      <h2>Join The Free Discord
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M12 6v10m0 0-4-4m4 4 4-4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </h2>
+      <div class="field">
+        <input class="input" id="o-name" name="name" autocomplete="name" placeholder="Full Name*" aria-label="Full name" required>
+      </div>
+      <div class="field">
+        <div class="phone">
+          <select class="select" id="o-cc" name="cc" aria-label="Country code">
+            <option value="+1" data-country="US">🇺🇸 +1</option>
+            <option value="+1" data-country="CA">🇨🇦 +1</option>
+            <option value="+44" data-country="GB">🇬🇧 +44</option>
+            <option value="+61" data-country="AU">🇦🇺 +61</option>
+            <option value="+49" data-country="DE">🇩🇪 +49</option>
+            <option value="+31" data-country="NL">🇳🇱 +31</option>
+            <option value="+33" data-country="FR">🇫🇷 +33</option>
+            <option value="+41" data-country="CH">🇨🇭 +41</option>
+            <option value="+90" data-country="TR">🇹🇷 +90</option>
+            <option value="+971" data-country="AE">🇦🇪 +971</option>
+          </select>
+          <input class="input" id="o-phone" name="phone" type="tel" autocomplete="tel-national" placeholder="Phone*" aria-label="Phone" required>
+        </div>
+      </div>
+      <div class="field">
+        <input class="input" id="o-email" name="email" type="email" autocomplete="email" placeholder="Email*" aria-label="Email" required>
+      </div>
+      <p class="error" id="optin-error" role="alert" hidden></p>
+      <button class="btn-gold" type="submit" id="optin-submit">Submit For Discord Access</button>
+      <p class="reassure">Your invite goes to your email + SMS. The full replay-to-live breakdown is pinned inside.</p>
+    </form>
+
+    <!-- Who this is for: the pains Mert's buyers describe in their own words (see README → "Why the copy says what it says") -->
+    <section class="pains" aria-labelledby="pains-title">
+      <h2 class="sub" id="pains-title">Sound <span class="hl">Familiar?</span></h2>
+      <div class="pains__grid">
+        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 7 4-14 3 7h4"/></svg><span>You call the move on replay. Live, you hesitate… then chase it.</span></p>
+        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v6h6"/><path d="M20 20v-6h-6"/><path d="M5.6 15a8 8 0 0 0 13.2 3M18.4 9A8 8 0 0 0 5.2 6"/></svg><span>You’ve passed evals and blown them. The reset fees keep stacking up.</span></p>
+        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 11v6h-6"/></svg><span>One bad day undoes two good weeks, and you know it isn’t the strategy.</span></p>
+        <p class="pain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2"/><path d="M8 7h7M8 11h5"/></svg><span>You’ve bought the courses and the indicators. You don’t need more information.</span></p>
+      </div>
+      <p class="pains__turn">The prop firm rules keep changing. <span class="hl">The auction doesn’t.</span></p>
+    </section>
+
+    <!-- Proof: shows only once PROOF in the script has entries (images in assets/mert/proof/) -->
+    <section class="receipts" aria-label="Results" data-proof-section hidden>
+      <h2 class="sub">Inside <span class="hl">The Discord</span></h2>
+      <div class="receipts__grid" data-proof></div>
+    </section>
+
+    <button class="btn-gold" type="button" id="back-to-form" style="max-width:560px">Submit For Discord Access</button>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss and is not suitable for everyone. Most people who trade lose money.
+      Nothing on this page is financial advice. No profit, funded-account, evaluation or payout result is promised or implied.
+      Examples are illustrative, and past performance does not guarantee future results. Replay and simulated trading have
+      limitations and do not represent actual trading. This site is not part of, or endorsed by, Meta, Facebook or Instagram.
+    </footer>
+  </div>
+</main>
+
+<!-- =====================================================================
+     PAGE 2, VERSION 1 — THANK YOU + VSL + APPLICATION FORM  (/apply)
+     ===================================================================== -->
+<main class="view" id="view-apply" data-view="apply" hidden>
+  <!-- Small notice line at the very top -->
+  <div class="announce">
+    <p class="announce__text">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <span>Check your <span class="hl">email</span> + <span class="hl">SMS</span> for Discord access…</span>
+    </p>
+  </div>
+  <div class="wrap">
+
+    <h1 class="sub intro hook" data-fit="intro">You Don’t Need <span class="hl">More Information</span>. You Need To <span class="hl">Execute It&nbsp;Live.</span></h1>
+    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch This Video To See The <b>Replay&#8209;To&#8209;Live Process</b> I Coach <b>1-On-1</b> On <b>ES&nbsp;&amp;&nbsp;NQ</b>.</h2>
+
+    <div class="video" data-video="vsl">
+      <div class="video__ph">
+        <span class="video__tag">Video placeholder</span>
+        <button class="video__play" type="button" aria-label="Play main VSL"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+        <span class="video__name">Main VSL</span>
+        <span class="video__meta">Swap in your video embed · ~10–20 min</span>
+      </div>
+      <div class="video__bar"><span></span></div>
+    </div>
+
+    <h2 class="step" data-fit><b>Step #2</b> Fill Out This Application To Apply For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship</h2>
+
+    <section class="card booker" aria-label="Strategy call application">
+      <div class="booker__steps">
+        <span class="on" id="st-form"><i></i>Fill out the form</span>
+        <span id="st-book"><i></i>Book your call</span>
+      </div>
+      <div class="booker__body">
+        <form class="booker__form" id="apply-form" novalidate>
+          <h3><span data-fill="brand">Mert</span> Strategy Call</h3>
+          <div class="field">
+            <label for="a-reason">What Is The Biggest Issue With Your Trading Right Now?&nbsp;<span class="req">*</span></label>
+            <select class="select" data-dropdown id="a-reason" name="reason" required>
+              <option value="">Select</option>
+              <option>I understand order flow but can't execute it live</option>
+              <option>I keep failing prop firm challenges</option>
+              <option>I'm inconsistent: one bad day undoes good weeks</option>
+              <option>I don't have a clear plan or roadmap</option>
+              <option>I feel stuck and don't know what to fix</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-exp">How Long Have You Been Trading Futures?&nbsp;<span class="req">*</span></label>
+            <select class="select" data-dropdown id="a-exp" name="experience" required>
+              <option value="">Select</option>
+              <option>I haven't started yet</option>
+              <option>Less than 1 year</option>
+              <option>1–3 years</option>
+              <option>3+ years</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-why">What Is Your Goal With Trading?&nbsp;<span class="req">*</span></label>
+            <select class="select" data-dropdown id="a-why" name="motivation" required>
+              <option value="">Select</option>
+              <option>🎯 To execute my plan live with confidence</option>
+              <option>🧾 To pass my evals and keep the funded account</option>
+              <option>📈 To become consistent month after month</option>
+              <option>💼 To build a skill that could replace my 9–5 one day</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-invest">How much do you have set aside to invest in yourself, your evals and your trading journey?&nbsp;<span class="req">*</span></label>
+            <select class="select" data-dropdown id="a-invest" name="investment" required>
+              <option value="">Select</option>
+              <option>$5,000+</option>
+              <option>$3,000 – $5,000</option>
+              <option>$2,000 – $3,000</option>
+              <option>$1,000 – $2,000</option>
+              <option>Under $1,000</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-ready">Are you ready to fix the issue in your first answer?&nbsp;<span class="req">*</span></label>
+            <select class="select" data-dropdown id="a-ready" name="ready" required>
+              <option value="">Select</option>
+              <option>Yes, I am ready to fix it</option>
+              <option>No, I'm just looking around</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-ig">What's your Instagram?&nbsp;<span class="req">*</span></label>
+            <input class="input" id="a-ig" name="instagram" autocomplete="off" placeholder="@handle" required>
+          </div>
+        </form>
+
+        <div class="booker__cal">
+          <!-- The calendar loads behind the blur as soon as page 2 opens; the blur lifts once the form is filled in -->
+          <div class="cal-embed is-locked" id="cal-embed" inert></div>
+          <div class="cal__lock" id="cal-lock">
+            <p class="cal__msg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <strong>Please fill out the form first</strong>
+              <span>Then pick a time that works for you.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss. Most people who trade lose money. No profit, funded-account, evaluation
+      or payout result is promised or implied. Past performance does not guarantee future results. This is not financial advice.
+    </footer>
+  </div>
+</main>
+
+<!-- =====================================================================
+     PAGE 2, VERSION 2 — THANK YOU + VSL + ONE-QUESTION-AT-A-TIME APPLICATION  (/apply-2)
+     Questions live in APPLY2_QUESTIONS in the script below.
+     ===================================================================== -->
+<main class="view" id="view-apply2" data-view="apply2" hidden>
+  <!-- Small notice line at the very top -->
+  <div class="announce">
+    <p class="announce__text">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <span>Check your <span class="hl">email</span> + <span class="hl">SMS</span> for Discord access…</span>
+    </p>
+  </div>
+  <div class="wrap">
+
+    <h1 class="sub intro hook" data-fit="intro">You Don’t Need <span class="hl">More Information</span>. You Need To <span class="hl">Execute It&nbsp;Live.</span></h1>
+    <h2 class="step intro" data-fit="intro"><b>Step #1</b> Watch This Video To See The <b>Replay&#8209;To&#8209;Live Process</b> I Coach <b>1-On-1</b> On <b>ES&nbsp;&amp;&nbsp;NQ</b>.</h2>
+
+    <div class="video" data-video="vsl">
+      <div class="video__ph">
+        <span class="video__tag">Video placeholder</span>
+        <button class="video__play" type="button" aria-label="Play main VSL"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+        <span class="video__name">Main VSL</span>
+        <span class="video__meta">Swap in your video embed · ~10–20 min</span>
+      </div>
+      <div class="video__bar"><span></span></div>
+    </div>
+
+    <section class="card tf" id="tf" aria-label="Strategy call application">
+      <div class="tf__progress" aria-hidden="true"><span id="tf-bar"></span></div>
+      <form class="tf__form" id="tf-form" novalidate></form>
+      <div class="tf__nav" id="tf-nav">
+        <button type="button" id="tf-prev" aria-label="Previous question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+        <button type="button" id="tf-next" aria-label="Next question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+      <!-- The calendar loads here (see-through, behind the questions) as soon as the page opens, and shows once the last answer is in -->
+      <div class="tf__cal is-waiting" id="tf-cal" inert>
+        <p class="tf__calhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Application done. Last step: pick a time for your call.</p>
+        <div class="cal-embed" id="tf-embed"></div>
+      </div>
+      <!-- /waitlist only: shown instead of the calendar once the last answer is in -->
+      <div class="tf__thanks" id="tf-thanks" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <h3>You’re On The Waiting List</h3>
+        <p>Thanks for applying. We’ll reach out as soon as a 1-on-1 spot opens up.</p>
+        <p id="tf-thanks-discord-text" hidden>In the meantime, join the free Discord and keep learning the auction with us.</p>
+        <a class="btn-gold" id="tf-thanks-discord" href="#" hidden>Join The Free Discord</a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss. Most people who trade lose money. No profit, funded-account, evaluation
+      or payout result is promised or implied. Past performance does not guarantee future results. This is not financial advice.
+    </footer>
+  </div>
+</main>
+
+<!-- =====================================================================
+     WAITING LIST  (/waitlist)
+     Same one-question-at-a-time card as /apply-2 (moved here by the script), without the video or calendar.
+     Asks for name, email and phone first unless page 1 already has them. Rows show "Waitlist" in Version.
+     ===================================================================== -->
+<main class="view" id="view-waitlist" data-view="waitlist" hidden>
+  <div class="wrap">
+
+    <p class="eyebrow">ES &amp; NQ Futures · <b>Order Flow</b> · 1-On-1</p>
+    <h1 class="headline">Join The <span class="hl"><span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship Waiting&nbsp;List</span></h1>
+    <p class="waitlist__text"><span data-fill="coach">Mert</span> only coaches a few traders 1-on-1 at a time. Answer a few quick questions and you’ll be the first to know when a spot opens&nbsp;up.</p>
+
+    <div id="waitlist-form"></div>
+
+    <!-- Same results gallery as page 1 (listed in PROOF in the script below); shows once PROOF has entries -->
+    <section class="receipts" aria-label="Results" data-proof-section hidden>
+      <div class="receipts__grid" data-proof></div>
+    </section>
+
+    <button class="btn-gold" type="button" id="back-to-waitlist" style="max-width:560px">Join The Waiting List</button>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss and is not suitable for everyone. Most people who trade lose money.
+      Nothing on this page is financial advice. No profit, funded-account, evaluation or payout result is promised or implied.
+      Examples are illustrative, and past performance does not guarantee future results.
+    </footer>
+  </div>
+</main>
+
+<!-- =====================================================================
+     NOT QUALIFIED  (/not-qualified)
+     Applicants whose investment answer is in CONFIG.disqualify land here instead of booking a call.
+     ===================================================================== -->
+<main class="view" id="view-notqualified" data-view="notqualified" hidden>
+  <div class="wrap wrap--narrow">
+
+    <h1 class="headline">Unfortunately, You <span class="hl">Don’t Qualify</span> For The <span class="nowrap">1-1</span> <span data-fill="program">Order Flow</span> Mentorship Right&nbsp;Now</h1>
+    <p class="nq">But don’t worry: join the free Discord and <b>keep learning the auction with us for free.</b></p>
+    <a class="btn-gold nq__btn" id="nq-discord" href="#" hidden>Join The Free Discord</a>
+    <p class="nq__note" id="nq-check">Your Discord invite is in your email + SMS.</p>
+
+    <!-- Free Instagram content: something to start on today -->
+    <section class="yt" aria-labelledby="ig-title">
+      <svg class="yt__logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#f09433"/><stop offset=".5" stop-color="#dc2743"/><stop offset="1" stop-color="#bc1888"/></linearGradient></defs><rect x="1" y="1" width="22" height="22" rx="6" fill="url(#ig-grad)"/><rect x="5.5" y="5.5" width="13" height="13" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="15.6" cy="8.4" r=".9" fill="#fff"/></svg>
+      <h2 class="yt__title" id="ig-title">Start Today With My <span class="hl">Free Order Flow Breakdowns</span></h2>
+      <p class="yt__text">On Instagram I break down how I read the auction on ES and NQ: the levels, the order flow and the execution mistakes I see traders make live. It’s all free. Start there and you’ll be miles ahead when you’re ready to apply again.</p>
+      <a class="yt__btn" id="nq-instagram" href="https://www.instagram.com/mertfutures/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#fff"/></svg>
+        <span>Follow <span data-fill="instagramHandle">@mertfutures</span></span>
+      </a>
+      <p class="yt__note">Turn on post notifications so you catch every breakdown.</p>
+    </section>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss. Most people who trade lose money. No profit, funded-account, evaluation
+      or payout result is promised or implied. Past performance does not guarantee future results. This is not financial advice.
+    </footer>
+  </div>
+</main>
+
+<!-- =====================================================================
+     PAGE 3 — POST-BOOKING  (/booked)
+     ===================================================================== -->
+<main class="view" id="view-booked" data-view="booked" hidden>
+  <!-- Small announcement line at the very top -->
+  <div class="announce">
+    <h1 class="announce__text">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--gold)"/><path d="M12 9v5m0 3v.5" stroke="#04080b" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>Wait! Your call is <u>not</u> confirmed yet…</span>
+    </h1>
+  </div>
+  <div class="wrap">
+
+    <h2 class="step" data-fit="booked"><b>Step #1:</b> Watch This <span class="hl">2&#8209;Minute</span> Video For Next Steps</h2>
+
+    <div class="video" data-video="nextSteps">
+      <div class="video__ph">
+        <span class="video__tag">Video placeholder</span>
+        <span class="video__name">Post-booking video · lays out pre-call steps</span>
+        <span class="video__meta">Swap in your video embed · ~2 min</span>
+      </div>
+      <button class="autoplay" type="button" id="unmute">
+        <strong>Your video has already started</strong>
+        <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h10l14-11v34L16 30H6z" fill="currentColor"/><path d="M40 16c3 3 3 13 0 16M47 10c6 6 6 22 0 28"/><path d="M4 4l56 40"/></svg>
+        <span>Click to listen</span>
+      </button>
+      <div class="video__bar"><span></span></div>
+    </div>
+
+    <!-- Opens their inbox at the confirmation email (spam included). The link is set in the script from their email. -->
+    <div class="confirm">
+      <a class="confirm__btn" id="confirm-gmail" href="https://mail.google.com/mail/u/0/" target="_blank" rel="noopener">
+        <svg viewBox="52 42 88 66" aria-hidden="true"><path fill="#4285f4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6"/><path fill="#34a853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15"/><path fill="#fbbc04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2"/><path fill="#ea4335" d="M72 74V48l24 18 24-18v26L96 92"/><path fill="#c5221f" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2"/></svg>
+        <span class="confirm__label"><small>Confirm In </small>Gmail</span>
+      </a>
+      <a class="confirm__btn" id="confirm-outlook" href="https://outlook.live.com/mail/0/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="12" y="6" width="17" height="20" rx="2" fill="#28a8ea"/><path d="M12 12l8.5 5.5L29 12" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="3" y="9" width="14" height="14" rx="2" fill="#0364b8"/><ellipse cx="10" cy="16" rx="3.3" ry="4" fill="none" stroke="#fff" stroke-width="2"/></svg>
+        <span class="confirm__label"><small>Confirm In </small>Outlook</span>
+      </a>
+    </div>
+
+    <h2 class="step" data-fit="booked"><b>Step #2:</b> Go Through Our FAQs</h2>
+
+    <div class="faqs">
+      <section class="faq">
+        <h3>What’s Inside The <span data-fill="program">Order Flow</span> Mentorship?</h3>
+        <div class="video" data-video="faqInside">
+          <div class="video__ph">
+            <span class="video__tag">Video placeholder</span>
+            <button class="video__play" type="button" aria-label="Play FAQ video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <span class="video__name">FAQ · What’s inside the 12 weeks</span>
+          </div>
+        </div>
+      </section>
+      <section class="faq">
+        <h3>Is <span data-fill="brand">Mert</span> A Real Trader Or Just A Course Seller?</h3>
+        <div class="video" data-video="faqLegit">
+          <div class="video__ph">
+            <span class="video__tag">Video placeholder</span>
+            <button class="video__play" type="button" aria-label="Play FAQ video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <span class="video__name">FAQ · Unedited live session, losses included</span>
+          </div>
+        </div>
+      </section>
+      <section class="faq">
+        <h3>Will I Work With <span data-fill="coach">Mert</span> Or An Assistant?</h3>
+        <div class="video" data-video="faqWho">
+          <div class="video__ph">
+            <span class="video__tag">Video placeholder</span>
+            <button class="video__play" type="button" aria-label="Play FAQ video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <span class="video__name">FAQ · Who you actually work with</span>
+          </div>
+        </div>
+      </section>
+      <section class="faq">
+        <h3>Can I Do This With A Full-Time Job?</h3>
+        <div class="video" data-video="faqTime">
+          <div class="video__ph">
+            <span class="video__tag">Video placeholder</span>
+            <button class="video__play" type="button" aria-label="Play FAQ video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <span class="video__name">FAQ · Trading ES &amp; NQ around a 9–5</span>
+          </div>
+        </div>
+      </section>
+      <section class="faq">
+        <h3>I’ve Already Bought Courses. Why Is This Different?</h3>
+        <div class="video" data-video="faqDifferent">
+          <div class="video__ph">
+            <span class="video__tag">Video placeholder</span>
+            <button class="video__play" type="button" aria-label="Play FAQ video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <span class="video__name">FAQ · Execution coaching vs. more content</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <h2 class="step" data-fit="booked"><b>Step #3:</b> See How The <span class="hl">12 Weeks</span> Work</h2>
+
+    <!-- The two phases of the mentorship. Check the bullet points with Mert before going live. -->
+    <div class="weeks">
+      <section class="week">
+        <span class="week__tag">Weeks 1–8</span>
+        <h3>Developing: from replay to live</h3>
+        <p>You build your plan with <span data-fill="coach">Mert</span>, then move it into live markets one stage at a time.</p>
+        <ul>
+          <li>Your playbook: the ES/NQ setups you take, written down with clear rules</li>
+          <li>Replay → sim → one micro contract. You only size up when your executions match the plan</li>
+          <li>1-on-1 reviews of your own recorded trades, so the feedback is about your clicks, not someone else’s</li>
+        </ul>
+      </section>
+      <section class="week">
+        <span class="week__tag">Weeks 9–12</span>
+        <h3>Following: <span data-fill="coach">Mert</span> follows your live trading</h3>
+        <p>You trade your plan live and <span data-fill="coach">Mert</span> follows along, then steps back week by week.</p>
+        <ul>
+          <li>Live-session reviews that keep you on your rules when it counts</li>
+          <li>Risk set up around your prop firm’s rules, whichever firm you trade</li>
+          <li>Support tapers off, so you finish executing on your own</li>
+        </ul>
+      </section>
+      <!-- Filled from CONFIG.guarantee; stays hidden while that's "" -->
+      <p class="promise" id="promise" hidden></p>
+    </div>
+
+    <!-- Results gallery (listed in PROOF in the script below); shows once PROOF has entries -->
+    <section class="receipts" aria-label="Results" data-proof-section hidden>
+      <h2 class="step" data-fit="booked"><b>Step #4:</b> See What Traders Are Saying</h2>
+      <div class="receipts__grid" data-proof></div>
+    </section>
+
+    <footer class="foot">
+      <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#disclaimer">Disclaimer</a></nav>
+      Futures trading involves substantial risk of loss and is not suitable for everyone. Most people who trade lose money.
+      Nothing on this page is financial advice. No profit, funded-account, evaluation or payout result is promised or implied.
+      Examples are illustrative, and past performance does not guarantee future results. Replay and simulated trading have
+      limitations and do not represent actual trading.
+    </footer>
+  </div>
+</main>
+
+<!-- Enlarged results image: opens when a results image is tapped; tap anywhere or press Esc to close -->
+<dialog class="zoom" id="zoom">
+  <img alt="">
+  <button type="button" class="zoom__close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</dialog>
+
+<!-- Live "just joined" toast (opt-in page only). Off until CONFIG.recentJoins has real names in it. -->
+<div class="toast is-out" id="toast" role="status" aria-live="polite">
+  <span class="avatar" id="toast-av">E</span>
+  <div>
+    <p><span class="tick">✓ Verified</span> · <b id="toast-name">Name</b> from <span id="toast-city">City</span> just joined the <b>free Discord</b></p>
+    <small>Just now</small>
+  </div>
+</div>
+
+<!-- Vimeo's player library (MIT), kept in the repo so the videos never depend on another site. -->
+<script src="/assets/vimeo-player.min.js"></script>
+<script>
+/* =======================================================================
+   EDIT ME — everything you'd normally swap lives here.
+   ======================================================================= */
+const CONFIG = {
+  // Google Sheets Web app URL (ends in /exec). See google-sheets/lead-capture.gs.
+  // Every page 1 opt-in is added as a row of the "Mert - Master Lead Sheet". Leave "" to send nothing.
+  leadSheetUrl: "",
+
+  brand: "Mert",
+  program: "Order Flow",        // mentorship name: "Apply For The 1-1 Order Flow Mentorship"
+  coach: "Mert",
+  instagramHandle: "@mertfutures",
+  instagramUrl: "https://www.instagram.com/mertfutures/",
+  // 1-on-1 spots shown on page 1. Keep this true: the bar is a promise to the reader, not decoration.
+  spotsLeft: 3,
+  spotsFill: 88,               // % of the scarcity bar that's filled
+
+  // Paste an embed URL to replace a placeholder (YouTube/Vimeo/Wistia embed link or an .mp4).
+  // Vimeo links get the player's title, profile picture, name and logo turned off automatically.
+  videos: {
+    vsl: "",
+    nextSteps: "",      // thank-you video on /booked
+    faqInside: "",      // What's inside the mentorship (the 12 weeks)
+    faqLegit: "",       // Real trader or course seller? Best: an unedited live session, losses included
+    faqWho: "",         // Will I work with Mert or an assistant?
+    faqTime: "",        // Can I do this with a full-time job?
+    faqDifferent: ""    // I've already bought courses. Why is this different?
+  },
+
+  // A/B test for page 2: share of new opt-ins sent to /apply (V1). The rest go to /apply-2 (V2).
+  // Each visitor keeps the version they got. Add ?v=1 or ?v=2 to a link to force one for testing.
+  abSplitV1: 0.5,
+
+  // Investment answers that don't qualify for a call (V1 and V2 wording). These applicants are sent to
+  // /not-qualified instead of the calendar; their answers still go to the sheet. The mentorship is $2,000.
+  disqualify: ["Under $1,000", "I want to, but don't have the resources to fund my goals"],
+
+  // Discord invite link for the buttons on /not-qualified and the waiting-list thank-you.
+  // Leave "" to tell them to check their email + SMS instead.
+  discordUrl: "",
+
+  // How the "Confirm In Gmail" button on /booked finds the booking confirmation email (spam and
+  // promotions included): anything from this address, OR anything with these words in the subject.
+  // Keep the words in the subject of the calendar's confirmation email. confirmFrom can stay "".
+  confirmFrom: "",
+  confirmSubject: "Strategy Call",
+
+  // GoHighLevel calendar shown on page 2: the calendar's booking link, e.g.
+  // "https://api.leadconnectorhq.com/widget/booking/AbC123…" (Calendars → the calendar's ⋮ → Share → Permanent link).
+  // When it's filled in, it replaces Calendly. Leave "" to use Calendly.
+  ghlCalendarUrl: "",
+
+  // Calendly booking page shown on page 2 (when ghlCalendarUrl is ""), e.g.
+  // "https://calendly.com/you/strategy-call?hide_event_type_details=1&hide_landing_page_details=1&hide_gdpr_banner=1".
+  // With neither link set, page 2 shows a "calendar goes here" box.
+  calendlyUrl: "",
+
+  // Optional promise shown under "How the 12 weeks work" on /booked. Leave "" to hide it.
+  // Only use wording Mert has agreed to, and never tie it to profits, payouts or passing an evaluation. Example:
+  // "<b>The process promise:</b> do every weekly review, and if you don't have a written, tested execution plan by
+  //  week 8, Mert keeps working with you for free until you do."
+  guarantee: "",
+
+  // "Just joined" toast on page 1. Off while this is []. Only feed it real opt-ins (your CRM / Discord bot):
+  // made-up sign-ups are deceptive and break FTC and Meta ad rules. Format: { name: "Daniel", city: "Austin" }.
+  recentJoins: []
+};
+
+// /waitlist asks these first when page 1 didn't give us their details. "check" rejects a bad answer.
+const CONTACT_QUESTIONS = [
+  { key: "name", type: "text", title: "First, what's your full name?", placeholder: "Full name", autocomplete: "name" },
+  { key: "email", type: "text", inputType: "email", title: "What's your email?", placeholder: "name@example.com", autocomplete: "email",
+    check: v => emailOk(v), checkError: "Please enter a valid email." },
+  // "phone" = country picker + number, checked against that country's real number rules (see phoneUi).
+  { key: "phone", type: "phone", title: "And your phone number?", check: () => phoneUi.commit(), checkError: () => phoneUi.error() }
+];
+
+// Page 2, version 2 questions (one at a time). type "choice" = pick one, "text" = short typed answer,
+// "long" = written answer that grows as they type (Shift+Enter for a new line).
+// "key" is the spreadsheet field: situation, evals, schedule, goal, obstacles, instagram and investment have columns.
+const APPLY2_QUESTIONS = [
+  {
+    key: "situation", type: "choice",
+    title: "Which of these best describes your trading right now?",
+    options: [
+      "I understand order flow but can't execute it live",
+      "I keep failing or blowing prop firm evals",
+      "I'm trading but inconsistent, and I want a real process",
+      "I'm new to futures and order flow"
+    ]
+  },
+  {
+    key: "evals", type: "choice",
+    title: "How many prop firm evaluations have you bought in the last 12 months?",
+    options: ["None yet", "1–3", "4–10", "More than 10"]
+  },
+  {
+    key: "schedule", type: "choice",
+    title: "When can you trade?",
+    options: ["I can trade the New York open live", "Only before or after work", "I can only practise on replay for now"]
+  },
+  {
+    key: "goal", type: "long",
+    title: "What's your biggest goal for your trading in the next 6‑12 months?",   // ‑ keeps "6-12" on one line
+    placeholder: "Type your answer here..."
+  },
+  {
+    key: "obstacles", type: "long",
+    title: "What's holding you back from that goal right now? Execution, discipline, prop rules, time…",
+    placeholder: "Type your answer here..."
+  },
+  {
+    key: "instagram", type: "text",
+    title: "What's your Instagram?",
+    placeholder: "@handle"
+  },
+  {
+    key: "investment", type: "choice",
+    title: "In a world where this was a PERFECT fit and we knew without a doubt we could help you hit the goals you just mentioned, how much are you willing to invest into your trading and getting 1-on-1 coaching from Mert?",
+    help: "Full transparency is recommended. We'll help you either way.",
+    options: ["$1,000 – $2,000", "$2,000 – $4,000", "I have a 650+ credit score", "I want to, but don't have the resources to fund my goals"]
+  }
+];
+
+// Results gallery, drawn into every data-proof grid (page 1, /waitlist and /booked), in this order. The
+// sections stay hidden while this list is empty. Each entry: [file in assets/mert/proof/, width, height,
+// description]. NAME.webp shows on the page, NAME-full.webp opens when the image is tapped. Originals go in
+// assets/mert/testimonials/ (see the README there). Best proof for this market: unedited session recordings
+// (losses included), journals showing rules followed, and members' messages. Never P&L or payout screenshots
+// in ads, and only real members who agreed to be shown.
+const PROOF = [
+  // ["community-01", 800, 600, "Discord message from a member about executing his plan live for the first time"],
+];
+
+/* ======================================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+// Saved in the browser for 30 days, so a reload or coming back later in a new tab keeps what they entered.
+const STORE_DAYS = 30;
+const store = {
+  get(k) {
+    try {
+      const saved = JSON.parse(localStorage.getItem("mert_" + k));
+      if (saved && Date.now() - saved.at < STORE_DAYS * 864e5) return saved.v;
+      return JSON.parse(sessionStorage.getItem(k));   // from before this was kept in localStorage
+    } catch { return null; }
+  },
+  set(k, v) { try { localStorage.setItem("mert_" + k, JSON.stringify({ v, at: Date.now() })); } catch {} }
+};
+
+// Fill brand / program / spots text
+$$("[data-fill]").forEach(el => { if (CONFIG[el.dataset.fill] != null) el.textContent = CONFIG[el.dataset.fill]; });
+$("#meter").style.setProperty("--fill", CONFIG.spotsFill + "%");
+if (CONFIG.guarantee) { $("#promise").innerHTML = CONFIG.guarantee; $("#promise").hidden = false; }
+if (CONFIG.instagramUrl) $("#nq-instagram").href = CONFIG.instagramUrl;
+
+// Swap placeholders for real embeds when a URL is configured (only on the page being shown).
+// Vimeo videos play with no Vimeo controls at all (no title, name, picture, logo or share buttons):
+// the page draws its own play button, progress bar, sound and full-screen buttons on top.
+const VIMEO_CLEAN = { title: 0, byline: 0, portrait: 0, badge: 0, vimeo_logo: 0, pip: 0, playsinline: 1, dnt: 1, autopause: 0, texttrack: "false" };
+const AUTOPLAY_VIDEOS = ["vsl", "nextSteps"];   // start on their own (muted, with a "Click to listen" box), like most VSLs
+function vimeoEmbedUrl(url, custom, autoplay) {
+  const u = new URL(url);
+  if (/player\.vimeo\.com/.test(url)) {
+    const extra = custom ? { controls: 0, ...(autoplay ? { autoplay: 1, muted: 1 } : {}) } : {};
+    Object.entries({ ...VIMEO_CLEAN, ...extra }).forEach(([k, v]) => u.searchParams.set(k, v));
+  }
+  return u;
+}
+function embedVideos(page) {
+  $$(".video[data-video]", page).forEach(box => {
+    const url = CONFIG.videos[box.dataset.video];
+    if (!url || box.classList.contains("has-embed")) return;
+    box.classList.add("has-embed");
+    if (/\.(mp4|webm|m3u8)(\?|$)/i.test(url)) { box.innerHTML = `<video src="${url}" controls playsinline></video>`; return; }
+    const autoplay = AUTOPLAY_VIDEOS.includes(box.dataset.video);
+    // Without the player library (e.g. the file opened from disk) Vimeo keeps its own controls.
+    const custom = /player\.vimeo\.com\/video\//.test(url) && !!window.Vimeo;
+    const u = vimeoEmbedUrl(url, custom, autoplay);
+    box.innerHTML = `<iframe src="${u}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Video"${autoplay ? "" : ' loading="lazy"'}></iframe>`;
+    if (custom) videoControls(box, autoplay);
+  });
+}
+
+const ICONS = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>',
+  sound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5c1.5 1.5 1.5 5.5 0 7M19.5 5.5c3.2 3.2 3.2 9.8 0 13"/></svg>',
+  muted: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>',
+  full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+  listen: '<svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h10l14-11v34L16 30H6z" fill="currentColor"/><path d="M40 16c3 3 3 13 0 16M47 10c6 6 6 22 0 28"/><path d="M4 4l56 40"/></svg>',
+};
+const players = [];
+function videoControls(box, autoplay) {
+  const player = new Vimeo.Player(box.querySelector("iframe"));
+  players.push(player);
+  // No Vimeo captions: switched off when the player is ready, when the video loads and starts, and again if
+  // Vimeo turns a caption track on by itself (e.g. "captions on by default" in the video's Vimeo settings).
+  // Vimeo also turns captions on by itself while a video autoplays muted, so it's checked every couple of
+  // seconds of playback too, and any caption line that appears switches them off on the spot.
+  const noCaptions = () => player.disableTextTrack().catch(() => {});
+  player.ready().then(noCaptions).catch(() => {});
+  ["loaded", "play", "volumechange"].forEach(ev => player.on(ev, noCaptions));
+  player.on("texttrackchange", d => { if (d && (d.language || d.kind)) noCaptions(); });
+  player.on("cuechange", d => { if (d && d.cues && d.cues.length) noCaptions(); });
+  let captionCheck = 0;
+  player.on("timeupdate", d => {
+    if (Math.abs(d.seconds - captionCheck) < 2) return;
+    captionCheck = d.seconds;
+    player.getTextTracks().then(tracks => { if (tracks.some(t => t.mode === "showing")) noCaptions(); }).catch(() => {});
+  });
+  // The clear layer on top keeps the mouse off Vimeo's own player, so its buttons never show up.
+  box.insertAdjacentHTML("beforeend", `
+    <button class="vp__hit" type="button" aria-label="Play or pause"></button>
+    <span class="vp__big" aria-hidden="true">${ICONS.play}</span>
+    <div class="vp__bar">
+      <button class="vp__btn vp__toggle" type="button" aria-label="Play or pause">${ICONS.play}${ICONS.pause}</button>
+      <div class="vp__track" role="slider" aria-label="Seek" tabindex="0"><span class="vp__rail"><span class="vp__fill"></span></span></div>
+      <button class="vp__btn vp__mute" type="button" aria-label="Sound on or off">${ICONS.sound}${ICONS.muted}</button>
+      <button class="vp__btn vp__full" type="button" aria-label="Full screen">${ICONS.full}</button>
+    </div>
+    ${autoplay ? `<button class="autoplay vp__listen" type="button"><strong>Your video has already started</strong>${ICONS.listen}<span>Click to listen</span></button>` : ""}`);
+  box.classList.add("vp", "is-paused");
+  box.classList.toggle("is-muted", autoplay);
+  const listen = $(".vp__listen", box), fill = $(".vp__fill", box);
+  let paused = true, muted = autoplay, duration = 0, touch = false, uiTimer = null;
+
+  const showUi = () => {
+    box.classList.add("show-ui");
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(() => box.classList.remove("show-ui"), 2500);
+  };
+  const setMuted = m => { muted = m; box.classList.toggle("is-muted", m); player.setMuted(m).catch(() => {}); if (!m) player.setVolume(1).catch(() => {}); };
+  const play = () => player.play().catch(() => {
+    // The browser wouldn't play it with sound: keep it going muted and ask again.
+    if (!muted) { setMuted(true); player.play().catch(() => {}); if (listen) listen.hidden = false; }
+  });
+  // "Click to listen": start the VSL over from the beginning, with sound.
+  const unmute = () => {
+    listen.hidden = true;
+    player.setCurrentTime(0).catch(() => {});
+    setMuted(false);
+    play();
+  };
+  const toggle = () => {
+    if (listen && !listen.hidden) return unmute();
+    if (paused) play(); else player.pause().catch(() => {});
+  };
+
+  player.on("play", () => {
+    paused = false; box.classList.remove("is-paused");
+    players.forEach(p => { if (p !== player) p.pause().catch(() => {}); });   // one video at a time
+  });
+  player.on("pause", () => { paused = true; box.classList.add("is-paused"); });
+  player.on("ended", () => { paused = true; box.classList.add("is-paused"); });
+  player.on("timeupdate", d => { duration = d.duration || duration; fill.style.width = (d.percent || 0) * 100 + "%"; });
+
+  const hit = $(".vp__hit", box);
+  hit.addEventListener("pointerdown", e => { touch = e.pointerType === "touch"; });
+  hit.addEventListener("click", () => {
+    // On phones the first tap on a playing video just shows the controls.
+    if (touch && !paused && !box.classList.contains("show-ui") && !(listen && !listen.hidden)) return showUi();
+    toggle(); showUi();
+  });
+  box.addEventListener("pointermove", e => { if (e.pointerType === "mouse") showUi(); });
+  listen?.addEventListener("click", unmute);
+  $(".vp__toggle", box).addEventListener("click", () => { toggle(); showUi(); });
+  $(".vp__mute", box).addEventListener("click", () => {
+    if (listen && !listen.hidden) return unmute();
+    setMuted(!muted); showUi();
+  });
+  $(".vp__full", box).addEventListener("click", () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    const go = box.requestFullscreen || box.webkitRequestFullscreen;
+    if (go) go.call(box); else player.requestFullscreen().catch(() => {});   // iPhone: Vimeo's own full screen
+  });
+  const track = $(".vp__track", box);
+  const seek = pct => { if (duration) player.setCurrentTime(Math.max(0, Math.min(1, pct)) * duration * 0.999).catch(() => {}); };
+  track.addEventListener("click", e => { const r = track.getBoundingClientRect(); seek((e.clientX - r.left) / r.width); showUi(); });
+  track.addEventListener("keydown", e => {
+    const step = { ArrowRight: .05, ArrowLeft: -.05 }[e.key];
+    if (step) { e.preventDefault(); seek(parseFloat(fill.style.width || 0) / 100 + step); }
+  });
+}
+$$(".video__play").forEach(btn => btn.addEventListener("click", () => btn.closest(".video").classList.toggle("is-playing")));
+$("#unmute")?.addEventListener("click", e => { e.currentTarget.hidden = true; });
+
+/* ---------- Pages: / → /apply or /apply-2 (A/B) → /booked, plus /waitlist and /not-qualified ---------- */
+// On Vercel, vercel.json serves this same file at every path; the path picks the page.
+// "/discord" is another address for page 1, e.g. for the link in your Instagram bio.
+const PAGES = { "/": "optin", "/discord": "optin", "/apply": "apply", "/apply-2": "apply2", "/booked": "booked", "/not-qualified": "notqualified", "/waitlist": "waitlist" };
+const PATHS = { optin: "/", apply: "/apply", apply2: "/apply-2", booked: "/booked", notqualified: "/not-qualified", waitlist: "/waitlist" };
+// Old #apply / #booked links → the matching path.
+if (["#apply", "#booked"].includes(location.hash) && location.protocol !== "file:") {
+  location.replace(PATHS[location.hash.slice(1)] + location.search);
+}
+const VIEW = PAGES[location.pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "").replace(/(.)\/+$/, "$1")] || "optin";
+// Keeps ?utm_… on every page (but not the ?v= test switch, so a reset only happens once).
+function go(view) {
+  const q = new URLSearchParams(location.search);
+  if (q.get("v") === "reset") q.delete("v");
+  const rest = q.toString();
+  location.assign(PATHS[view] + (rest ? "?" + rest : ""));
+}
+
+// A/B version for page 2. Decided once per visitor and remembered.
+// Testing: ?v=1 or ?v=2 forces a version; ?v=reset forgets it so the next opt-in is a fresh 50/50 draw.
+function abVersion() {
+  const param = new URLSearchParams(location.search).get("v");
+  if (param === "reset") { try { localStorage.removeItem("mert_apply_version"); } catch {} }
+  const forced = { "1": "V1", "2": "V2" }[param];
+  let v = forced;
+  try { v = v || localStorage.getItem("mert_apply_version"); } catch {}
+  if (v !== "V1" && v !== "V2") v = Math.random() < CONFIG.abSplitV1 ? "V1" : "V2";
+  try { localStorage.setItem("mert_apply_version", v); } catch {}
+  return v;
+}
+const pageVersion = () => (VIEW === "waitlist" ? "Waitlist" : VIEW === "apply2" ? "V2" : VIEW === "apply" ? "V1" : abVersion());
+
+function route() {
+  $$("[data-view]").forEach(v => { v.hidden = v.dataset.view !== VIEW; });
+  const page = $(`[data-view="${VIEW}"]`);
+  // Only the visible page's clips play, so the other pages' videos never download.
+  $$("video[data-autoplay]", page).forEach(v => { v.preload = "auto"; v.autoplay = true; v.play().catch(() => {}); });
+  embedVideos(page);
+  fitHeadings();
+  if (VIEW === "apply") prefillApply();
+  if (VIEW === "apply2") initTypeform();
+  if (VIEW === "waitlist") {
+    $("#waitlist-form").replaceWith(tf);   // same question card as /apply-2
+    $("#tf-cal").remove();
+    initTypeform();
+  }
+  toast.active(VIEW === "optin");
+  if (VIEW === "optin") warmUpNextPage();
+  if (VIEW === "apply" || VIEW === "apply2") warmUpNextPage([CONFIG.videos.nextSteps], false);
+  if (VIEW === "booked") setupConfirmButton();
+}
+
+// "Confirm In Gmail" / "Confirm In Outlook" open their email on the web (phones too), so it works the same
+// everywhere. Gmail searches every folder (in:anywhere covers Spam and Promotions) in the account they
+// booked with (authuser picks it when several are signed in). Outlook on the web can't be opened on a
+// search, so it opens their inbox: Outlook.com for personal addresses, Microsoft 365 for work ones.
+function setupConfirmButton() {
+  const email = (lead.email || "").trim().toLowerCase(), domain = email.split("@")[1] || "";
+  // { } is Gmail's OR: from our address, or the confirmation's subject words (whoever sent it).
+  const query = CONFIG.confirmFrom ? `{from:${CONFIG.confirmFrom} subject:"${CONFIG.confirmSubject}"}` : `subject:"${CONFIG.confirmSubject}"`;
+  const search = encodeURIComponent("in:anywhere " + query).replace(/%20/g, "+");
+  const gmail = "https://mail.google.com/mail/" + (email ? "?authuser=" + encodeURIComponent(email) : "u/0/") + "#search/" + search;
+  // Through Google's sign-in, because a plain link loses the "#search/…" part when someone has to log in
+  // first (common on phones). Google keeps it inside "continue" and sends them on after sign-in; anyone
+  // already signed in goes straight through (passive=true). Email picks the account to sign in with.
+  $("#confirm-gmail").href = "https://accounts.google.com/ServiceLogin?" + new URLSearchParams({
+    service: "mail", passive: "true", ...(email ? { Email: email } : {}), continue: gmail,
+  });
+  const personal = !domain || /^(outlook|hotmail|live|msn)\./.test(domain) || /^(gmail|googlemail|yahoo|icloud|me|mac|aol|proton)\./.test(domain);
+  $("#confirm-outlook").href = personal ? "https://outlook.live.com/mail/0/" : "https://outlook.office.com/mail/";
+}
+
+// Page 1 quietly loads the VSL player and the booking calendar in hidden frames, 10 seconds in or as soon
+// as they start filling in the form, so both show up straight away on page 2 (the browser keeps their
+// files). Page 2 does the same for the thank-you video on /booked. It waits so it never slows down the
+// page itself, and nothing plays: no video streams yet.
+function warmUpNextPage(videos = [CONFIG.videos.vsl, CONFIG.ghlCalendarUrl], onForm = true) {
+  let done = false;
+  const warm = () => {
+    if (done) return;
+    done = true;
+    const urls = videos.filter(Boolean).map(url => /player\.vimeo\.com/.test(url) ? vimeoEmbedUrl(url, !!window.Vimeo, false) : url);
+    urls.forEach(src => {
+      const f = document.createElement("iframe");
+      f.src = src;
+      f.title = "";
+      f.tabIndex = -1;
+      f.setAttribute("aria-hidden", "true");
+      f.style.cssText = "position:fixed;left:-10000px;top:0;width:640px;height:360px;opacity:0;pointer-events:none;border:0";
+      f.addEventListener("load", () => setTimeout(() => f.remove(), 8000));   // files are cached by then
+      document.body.appendChild(f);
+    });
+  };
+  const soon = () => (window.requestIdleCallback ? requestIdleCallback(warm, { timeout: 2000 }) : warm());
+  setTimeout(soon, 10000);
+  if (onForm) $("#optin-form").addEventListener("focusin", soon, { once: true });
+}
+
+/* ---------- One-line headings ---------- */
+// From 761px wide, headings marked data-fit stay on one line and shrink just enough to fit the column.
+// Headings with the same data-fit name all take the smallest of their sizes. Phones wrap them as usual.
+const fitWide = matchMedia("(min-width: 761px)");
+function fitHeadings() {
+  const groups = {};
+  $$("[data-fit]").forEach(el => {
+    el.style.fontSize = "";
+    if (!fitWide.matches || !el.offsetParent) return;
+    const cs = getComputedStyle(el.parentElement);
+    const room = el.parentElement.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    if (el.scrollWidth > room) {
+      size = Math.floor(size * room / el.scrollWidth * 10) / 10;   // text width scales with font size
+      el.style.fontSize = size + "px";
+      while (el.scrollWidth > room && size > 12) el.style.fontSize = (size -= .5) + "px";
+    }
+    if (el.dataset.fit) (groups[el.dataset.fit] ||= []).push([el, size]);
+  });
+  Object.values(groups).forEach(list => {
+    const size = Math.min(...list.map(([, s]) => s));
+    list.forEach(([el]) => { el.style.fontSize = size + "px"; });
+  });
+}
+window.addEventListener("resize", fitHeadings);
+document.fonts?.ready.then(fitHeadings);   // web fonts are wider than the fallback
+
+/* ---------- Lead data (opt-in → application prefill) ---------- */
+let lead = store.get("lead") || {};
+const qs = new URLSearchParams(location.search);   // UTM-style prefill: ?name=&email=&phone=
+// UTMs (from the latest link that had them) and the referring site are remembered, so they still reach
+// the sheet if the person reloads, or comes back later without the ?utm_… in the link.
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+const tracking = (() => {
+  const saved = store.get("tracking") || {};
+  const fromLink = Object.fromEntries(UTM_KEYS.map(k => [k, qs.get(k) || ""]).filter(([, v]) => v));
+  const external = document.referrer && new URL(document.referrer).host !== location.host ? document.referrer : "";
+  const now = { ...(Object.keys(fromLink).length ? fromLink : pickUtms(saved)), referrer: external || saved.referrer || "" };
+  store.set("tracking", now);
+  return now;
+  function pickUtms(o) { return Object.fromEntries(UTM_KEYS.map(k => [k, o[k] || ""]).filter(([, v]) => v)); }
+})();
+["name", "email", "phone"].forEach(k => { const v = qs.get(k) || (k === "name" && qs.get("first_name")); if (v) lead[k] = v; });
+
+function prefillApply() {
+  checkApply();
+  initCalendar($("#cal-embed"));   // start loading the calendar behind the blur right away
+}
+
+/* ---------- Send to the Google Sheet ---------- */
+// type "optin" adds a row; "application" and "booked" fill in that person's row (matched by email).
+function sendLead(data, type = "optin") {
+  if (!CONFIG.leadSheetUrl) return;
+  const body = new URLSearchParams({
+    version: pageVersion(),
+    ...data,
+    type,
+    funnel: document.title,
+    page_url: location.href.split("#")[0],
+    ...Object.fromEntries(UTM_KEYS.map(k => [k, tracking[k] || ""])),
+    referrer: tracking.referrer || document.referrer,
+    device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
+  });
+  // Apps Script doesn't send CORS headers, so the response can't be read; "no-cors" still delivers the row.
+  fetch(CONFIG.leadSheetUrl, { method: "POST", mode: "no-cors", body, keepalive: true }).catch(() => {});
+}
+
+/* ---------- Opt-in form ---------- */
+const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+// Phone rules per country in the dropdown: the national number (no country code, no leading 0),
+// what a real number there looks like, and how to show it. A typed "+44…" or leading 0 is understood too.
+const PHONE_RULES = {
+  // US & Canada: always 10 digits; area code and exchange can't start with 0 or 1.
+  US: { code: "1", re: /^[2-9]\d{2}[2-9]\d{6}$/, hint: "10 digits, like 201 555 0123", fmt: [3, 3, 4] },
+  CA: { code: "1", re: /^[2-9]\d{2}[2-9]\d{6}$/, hint: "10 digits, like 416 555 0123", fmt: [3, 3, 4] },
+  // UK: 10 digits after the 0 (mobiles 07…); a few older landlines have 9.
+  GB: { code: "44", re: /^(7\d{9}|1\d{8,9}|[23589]\d{9})$/, hint: "like 07700 900123", fmt: [4, 6] },
+  // Australia: 9 digits after the 0 (mobiles 04…).
+  AU: { code: "61", re: /^[23478]\d{8}$/, hint: "like 0412 345 678", fmt: [3, 3, 3] },
+  // Germany: mobiles 015…/016…/017… have 10–11 digits after the 0; landlines 6–11.
+  DE: { code: "49", re: /^(1[5-7]\d{8,9}|[2-9]\d{5,10})$/, hint: "like 0151 23456789", fmt: n => n[0] === "1" ? [3, 9] : [n.length] },
+  // Netherlands: 9 digits after the 0 (mobiles 06…).
+  NL: { code: "31", re: /^[1-9]\d{8}$/, hint: "like 06 12345678", fmt: n => n[0] === "6" ? [1, 8] : [2, 7] },
+  // France: 9 digits after the 0 (mobiles 06… and 07…).
+  FR: { code: "33", re: /^[1-9]\d{8}$/, hint: "like 06 12 34 56 78", fmt: [1, 2, 2, 2, 2] },
+  // Switzerland: 9 digits after the 0 (mobiles 07…).
+  CH: { code: "41", re: /^[1-9]\d{8}$/, hint: "like 078 123 45 67", fmt: [2, 3, 2, 2] },
+  // Turkey: 10 digits after the 0 (mobiles 05…).
+  TR: { code: "90", re: /^[2-5]\d{9}$/, hint: "like 0532 123 45 67", fmt: [3, 3, 2, 2] },
+  // UAE: mobiles 05… have 9 digits after the 0; landlines 8.
+  AE: { code: "971", re: /^(5\d{8}|[2-9]\d{7})$/, hint: "like 050 123 4567", fmt: n => n.length === 8 ? [1, 3, 4] : [2, 3, 4] },
+};
+const ccSelect = $("#o-cc"), phoneInput = $("#o-phone");
+const phoneCountry = () => ccSelect.selectedOptions[0]?.dataset.country || "US";
+// → { ok, e164: "+12015550123", national: "2015550123" } for the selected country.
+function parsePhone(raw, country = phoneCountry()) {
+  const rule = PHONE_RULES[country];
+  let digits = String(raw).replace(/\D/g, "");
+  if (/^\s*(\+|00)/.test(raw)) {   // they typed their own country code
+    digits = digits.replace(/^00/, "");
+    const match = Object.entries(PHONE_RULES).find(([c, r]) => digits.startsWith(r.code) && (c === country || r.code !== rule.code));
+    if (match && match[0] !== country) { ccSelect.value = "+" + match[1].code; selectCountry(match[0]); return parsePhone(raw, match[0]); }
+    if (digits.startsWith(rule.code)) digits = digits.slice(rule.code.length);
+  } else if (rule.code === "1" && digits.length === 11 && digits[0] === "1") {
+    digits = digits.slice(1);   // "1 201 555 0123"
+  } else if (rule.code !== "1") {
+    digits = digits.replace(/^0/, "");   // trunk 0: "07700…" → "7700…"
+  }
+  return { ok: rule.re.test(digits), e164: "+" + rule.code + digits, national: digits };
+}
+function selectCountry(country) {
+  const opt = [...ccSelect.options].find(o => o.dataset.country === country);
+  if (opt) opt.selected = true;
+}
+// Shows the number in local groups once they leave the field, e.g. 201 555 0123.
+function prettyPhone(national, country = phoneCountry()) {
+  const fmt = PHONE_RULES[country].fmt, groups = typeof fmt === "function" ? fmt(national) : fmt, out = [];
+  let i = 0;
+  groups.forEach((n, g) => { const part = national.slice(i, g === groups.length - 1 ? undefined : i + n); if (part) out.push(part); i += n; });
+  return (PHONE_RULES[country].code === "1" ? "" : "0") + out.join(" ");
+}
+function checkPhoneField(show) {
+  const raw = phoneInput.value.trim();
+  if (!raw) { phoneInput.removeAttribute("aria-invalid"); return null; }
+  const p = parsePhone(raw);
+  if (show) {
+    phoneInput.setAttribute("aria-invalid", !p.ok);
+    if (p.ok) phoneInput.value = prettyPhone(p.national);
+  }
+  return p;
+}
+phoneInput.addEventListener("blur", () => { if (phoneInput.value.trim()) checkPhoneField(true); saveDraft(); });
+phoneInput.addEventListener("input", () => { if (phoneInput.getAttribute("aria-invalid") === "true" && checkPhoneField(false)?.ok) phoneInput.removeAttribute("aria-invalid"); });
+ccSelect.addEventListener("change", () => { if (phoneInput.value.trim()) checkPhoneField(true); saveDraft(); });
+
+// What they type on page 1 is kept, so a reload (or coming back later) doesn't wipe it.
+const optinForm = $("#optin-form");
+function saveDraft() {
+  const f = optinForm;
+  store.set("draft", { name: f.name.value, email: f.email.value, phone: f.phone.value, country: phoneCountry() });
+}
+optinForm.addEventListener("input", saveDraft);
+(function restoreDraft() {
+  const f = optinForm, draft = store.get("draft");
+  const saved = draft || (lead.email ? { name: lead.name, email: lead.email, phone: lead.phoneNational || "", country: lead.country } : null);
+  if (!saved) return;
+  if (saved.country) selectCountry(saved.country);
+  if (!f.name.value && saved.name) f.name.value = saved.name;
+  if (!f.email.value && saved.email) f.email.value = saved.email;
+  if (!f.phone.value && saved.phone) f.phone.value = saved.phone;
+})();
+
+// "jordan lee" or "JORDAN LEE" → "Jordan Lee", so emails say "Hey Jordan". Names typed with their own
+// capitals ("McKenzie", "de la Cruz") are left exactly as typed.
+function tidyName(raw) {
+  const name = raw.trim().replace(/\s+/g, " ");
+  if (name !== name.toLowerCase() && name !== name.toUpperCase()) return name;
+  return name.toLowerCase().replace(/(^|[\s\-'’])(\p{L})/gu, (m, sep, ch) => sep + ch.toUpperCase());
+}
+
+optinForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.currentTarget;
+  f.name.value = tidyName(f.name.value);
+  const name = f.name.value, email = f.email.value.trim();
+  const phone = checkPhoneField(true), country = phoneCountry();
+  const bad = [];
+  f.name.setAttribute("aria-invalid", !name); if (!name) bad.push("your name");
+  f.phone.setAttribute("aria-invalid", !phone?.ok);
+  if (!phone) bad.push("a phone number");
+  else if (!phone.ok) bad.push("a valid " + (country === "GB" ? "UK" : country) + " phone number (" + PHONE_RULES[country].hint + ")");
+  f.email.setAttribute("aria-invalid", !emailOk(email)); if (!emailOk(email)) bad.push("a valid email");
+  const err = $("#optin-error");
+  if (bad.length) { err.textContent = "Please add " + bad.join(", ") + "."; err.hidden = false; return; }
+  err.hidden = true;
+  lead = { name, email, phone: phone.e164, phoneNational: f.phone.value.trim(), country };
+  saveDraft();
+  const version = abVersion();
+  sendLead({ name, email, phone: phone.e164, country, version });
+  store.set("lead", lead);
+  go(version === "V2" ? "apply2" : "apply");
+});
+$("#back-to-waitlist").addEventListener("click", () => tf.scrollIntoView({ behavior: "smooth", block: "center" }));
+$("#back-to-form").addEventListener("click", () => { $("#optin-form").scrollIntoView({ behavior: "smooth", block: "center" }); $("#o-name").focus({ preventScroll: true }); });
+
+/* ---------- Application form gates the Calendly booking ---------- */
+const applyForm = $("#apply-form");
+function checkApply() {
+  const ok = $$("[required]", applyForm).every(el => el.type === "radio"
+    ? !!applyForm.querySelector(`input[name="${el.name}"]:checked`)
+    : el.value.trim() && (el.type !== "email" || emailOk(el.value.trim())));
+  const out = ok && CONFIG.disqualify.includes(applyForm.elements.investment.value);
+  if (ok) queueApplication(out); else clearTimeout(applicationTimer);
+  const open = ok && !out;
+  $("#cal-embed").classList.toggle("is-locked", !open);
+  $("#cal-embed").inert = !open;
+  $("#cal-lock").hidden = open;
+  $("#st-form").classList.toggle("on", !open);
+  $("#st-book").classList.toggle("on", open);
+  return open;
+}
+applyForm.addEventListener("input", checkApply);
+applyForm.addEventListener("change", checkApply);
+
+// Send the answers to the sheet once the form is complete (and again if they change),
+// waiting a moment so typing in the Instagram field doesn't send a row per keystroke.
+const applicationData = () => ({ ...lead, ...Object.fromEntries(new FormData(applyForm)) });
+let applicationSent = "", applicationTimer = null;
+// A disqualifying investment answer sends them to /not-qualified once the answers are saved.
+// "stage" marks a finished application, which is what moves them along in GoHighLevel.
+function queueApplication(disqualified) {
+  clearTimeout(applicationTimer);
+  applicationTimer = setTimeout(() => {
+    const data = { ...applicationData(), stage: disqualified ? "not_qualified" : "applied" }, key = JSON.stringify(data);
+    if (key !== applicationSent) { applicationSent = key; sendLead(data, "application"); }
+    if (disqualified) go("notqualified");
+  }, 1500);
+}
+
+/* ---------- Custom dropdowns (open below the field on every browser) ---------- */
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CHEV = '<svg class="dd__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+let openDropdown = null;
+$$("select[data-dropdown]").forEach(sel => {
+  const wrap = document.createElement("div");
+  wrap.className = "dd";
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(sel);
+  sel.tabIndex = -1;
+  sel.setAttribute("aria-hidden", "true");
+
+  const label = document.querySelector(`label[for="${sel.id}"]`);
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "dd__btn";
+  btn.id = sel.id + "-btn";
+  btn.setAttribute("aria-haspopup", "listbox");
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = `<span class="dd__value"></span>${CHEV}`;
+  if (label) { label.htmlFor = btn.id; btn.setAttribute("aria-labelledby", label.id = sel.id + "-label"); }
+
+  const list = document.createElement("ul");
+  list.className = "dd__list";
+  list.id = sel.id + "-list";
+  list.setAttribute("role", "listbox");
+  list.hidden = true;
+  const opts = [...sel.options].filter(o => o.value);
+  list.innerHTML = opts.map((o, i) => `<li class="dd__opt" role="option" id="${sel.id}-opt-${i}" data-i="${i}" aria-selected="false"><span>${o.text}</span>${CHECK}</li>`).join("");
+  wrap.append(btn, list);
+  const items = [...list.children];
+  let active = -1;
+
+  function render() {
+    const i = opts.findIndex(o => o.value === sel.value);
+    btn.querySelector(".dd__value").textContent = i >= 0 ? opts[i].text : sel.options[0].text;
+    btn.classList.toggle("is-empty", i < 0);
+    items.forEach((li, k) => li.setAttribute("aria-selected", String(k === i)));
+  }
+  function setActive(i) {
+    active = Math.max(0, Math.min(items.length - 1, i));
+    items.forEach((li, k) => li.classList.toggle("is-active", k === active));
+    items[active].scrollIntoView({ block: "nearest" });
+    btn.setAttribute("aria-activedescendant", items[active].id);
+  }
+  function open() {
+    if (openDropdown && openDropdown !== close) openDropdown();
+    list.hidden = false; wrap.classList.add("is-open"); btn.setAttribute("aria-expanded", "true");
+    // The card clips anything past its edge, so open upwards when the list would run off its bottom.
+    const card = wrap.closest(".card");
+    wrap.classList.remove("is-up");
+    wrap.classList.toggle("is-up", !!card && list.getBoundingClientRect().bottom > card.getBoundingClientRect().bottom - 8);
+    setActive(Math.max(0, opts.findIndex(o => o.value === sel.value)));
+    openDropdown = close;
+  }
+  function close() {
+    list.hidden = true; wrap.classList.remove("is-open", "is-up"); btn.setAttribute("aria-expanded", "false");
+    btn.removeAttribute("aria-activedescendant");
+    if (openDropdown === close) openDropdown = null;
+  }
+  function choose(i) {
+    sel.value = opts[i].value;
+    sel.dispatchEvent(new Event("change", { bubbles: true }));
+    render(); close(); btn.focus();
+  }
+  btn.addEventListener("click", () => (list.hidden ? open() : close()));
+  btn.addEventListener("keydown", e => {
+    const isOpen = !list.hidden;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!isOpen) open(); else setActive(active + (e.key === "ArrowDown" ? 1 : -1)); }
+    else if ((e.key === "Enter" || e.key === " ") && isOpen) { e.preventDefault(); choose(active); }
+    else if (e.key === "Escape" && isOpen) { e.preventDefault(); close(); }
+    else if (e.key === "Tab" && isOpen) close();
+  });
+  sel.addEventListener("dd:sync", render);   // value set from outside (e.g. the matching radio)
+  list.addEventListener("mousedown", e => e.preventDefault());   // keep focus on the button
+  list.addEventListener("click", e => { const li = e.target.closest(".dd__opt"); if (li) choose(+li.dataset.i); });
+  list.addEventListener("mousemove", e => { const li = e.target.closest(".dd__opt"); if (li && +li.dataset.i !== active) setActive(+li.dataset.i); });
+  render();
+});
+document.addEventListener("click", e => { if (openDropdown && !e.target.closest(".dd.is-open")) openDropdown(); });
+
+/* ---------- Page 2, version 2: one question at a time ---------- */
+const tf = $("#tf"), tfForm = $("#tf-form");
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let tfIndex = 0, tfSteps = [], tfAdvanceTimer = null, tfSent = "", tfQuestions = APPLY2_QUESTIONS;
+const typeformData = () => ({ ...lead, ...Object.fromEntries(new FormData(tfForm)) });
+
+function initTypeform() {
+  const knowThem = lead.name && lead.email && lead.phone;
+  tfQuestions = VIEW === "waitlist" && !knowThem ? [...CONTACT_QUESTIONS, ...APPLY2_QUESTIONS] : APPLY2_QUESTIONS;
+  tfForm.innerHTML = tfQuestions.map((q, i) => {
+    const id = "tf-" + q.key;
+    const field = q.type === "choice"
+      ? `<div class="tf__opts" role="radiogroup" aria-labelledby="${id}-title">${q.options.map((o, k) =>
+          `<label class="tf__opt"><input type="radio" name="${q.key}" value="${esc(o)}"><span class="tf__key">${String.fromCharCode(65 + k)}</span><span>${esc(o)}</span>${CHECK}</label>`).join("")}</div>`
+      : q.type === "phone"
+        ? phoneUi.html(id)
+        : q.type === "long"
+        ? `<textarea class="tf__input" id="${id}" name="${q.key}" rows="1" placeholder="${esc(q.placeholder || "")}" aria-labelledby="${id}-title"></textarea>`
+        : `<input class="tf__input" id="${id}" name="${q.key}" type="${q.inputType || "text"}" autocomplete="${q.autocomplete || "off"}" placeholder="${esc(q.placeholder || "")}" aria-labelledby="${id}-title">`;
+    return `<div class="tf__step" data-i="${i}" hidden>
+      <div class="tf__head"><span class="tf__num">${i + 1}${ARROW}</span><h3 class="tf__title${q.title.length > 110 ? " tf__title--long" : ""}" id="${id}-title">${esc(q.title)}&nbsp;<span class="req">*</span></h3></div>
+      <div class="tf__body">
+        ${q.help ? `<p class="tf__help">${q.help}</p>` : ""}
+        ${field}
+        <p class="tf__err" role="alert" hidden></p>
+        <div class="tf__actions"><button type="button" class="tf__ok">OK ${CHECK}</button><span class="tf__hint">${q.type === "long" ? "<b>Shift ⇧ + Enter ↵</b> for a new line" : "press <b>Enter ↵</b>"}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+  tfSteps = $$(".tf__step", tfForm);
+  const phoneStep = tfQuestions.findIndex(q => q.type === "phone");
+  if (phoneStep >= 0) phoneUi.attach(tfSteps[phoneStep]);
+  tfShow(0);
+  if (VIEW === "apply2") initCalendar($("#tf-embed"));   // loads hidden now, so it's ready the moment the last answer is in
+}
+function tfValue(i) {
+  const q = tfQuestions[i];
+  return q.type === "choice"
+    ? tfForm.querySelector(`input[name="${q.key}"]:checked`)?.value || ""
+    : q.type === "phone"
+      ? tfSteps[i].querySelector(".tf__input").value.trim()   // what they typed; the checked number goes in a hidden field
+      : tfForm.elements[q.key].value.trim();
+}
+function tfShow(i) {
+  clearTimeout(tfAdvanceTimer);
+  tfIndex = i;
+  phoneUi.close();
+  tfSteps.forEach((st, k) => { st.hidden = k !== i; st.classList.toggle("is-in", k === i); });
+  $("#tf-bar").style.width = (i / tfQuestions.length) * 100 + "%";
+  $("#tf-prev").disabled = i === 0;
+  const input = tfSteps[i].querySelector(".tf__input");
+  if (input && matchMedia("(hover: hover)").matches) input.focus({ preventScroll: true });
+}
+function tfNext() {
+  const q = tfQuestions[tfIndex], err = tfSteps[tfIndex].querySelector(".tf__err"), value = tfValue(tfIndex);
+  const problem = !value ? (q.type === "choice" ? "Please pick an answer." : "Please fill this in.")
+    : q.check && !q.check(value) ? (typeof q.checkError === "function" ? q.checkError() : q.checkError) : "";
+  if (problem) {
+    err.textContent = problem;
+    err.hidden = false;
+    return;
+  }
+  err.hidden = true;
+  // Save each answer as it's given, so drop-offs show in the sheet (skipped if nothing changed).
+  // Rows are matched by email, so nothing is sent until we have one. The last answer also carries
+  // "stage", which marks the application as finished (GoHighLevel moves them to that pipeline stage).
+  const last = tfIndex === tfQuestions.length - 1, data = typeformData();
+  const out = CONFIG.disqualify.includes(data.investment);
+  if (last) data.stage = out ? "not_qualified" : VIEW === "waitlist" ? "waitlist" : "applied";
+  const key = JSON.stringify(data);
+  if (data.email && key !== tfSent) { tfSent = key; sendLead(data, "application"); }
+  if (!last) tfShow(tfIndex + 1);
+  else if (out) go("notqualified");
+  else tfFinish();
+}
+function tfFinish() {
+  $("#tf-bar").style.width = "100%";
+  tf.classList.add("is-done");
+  if (VIEW === "waitlist") {
+    $("#tf-thanks").hidden = false;
+    $("#back-to-waitlist").hidden = true;   // they're already on the list
+  } else {
+    const cal = $("#tf-cal");
+    cal.classList.remove("is-waiting");
+    cal.inert = false;
+  }
+  tf.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+tfForm.addEventListener("submit", e => e.preventDefault());
+tfForm.addEventListener("click", e => { if (e.target.closest(".tf__ok")) tfNext(); });
+tfForm.addEventListener("change", e => {
+  const opt = e.target.closest(".tf__opt");
+  if (!opt) return;
+  opt.classList.remove("is-picked"); void opt.offsetWidth; opt.classList.add("is-picked");
+  tfSteps[tfIndex].querySelector(".tf__err").hidden = true;
+  clearTimeout(tfAdvanceTimer);
+  tfAdvanceTimer = setTimeout(tfNext, 450);   // choices move on by themselves, like Typeform
+});
+tfForm.addEventListener("input", e => {
+  tfSteps[tfIndex].querySelector(".tf__err").hidden = true;
+  if (e.target.matches("textarea")) { e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }   // grow with the answer
+});
+$("#tf-prev").addEventListener("click", () => { if (tfIndex > 0) tfShow(tfIndex - 1); });
+$("#tf-next").addEventListener("click", tfNext);
+document.addEventListener("keydown", e => {
+  if ((VIEW !== "apply2" && VIEW !== "waitlist") || tf.classList.contains("is-done") || e.metaKey || e.ctrlKey || e.altKey) return;
+  const q = tfQuestions[tfIndex];
+  if (e.key === "Enter" && e.shiftKey && e.target.matches("textarea")) return;   // new line in a written answer
+  if (e.key === "Enter" && tf.contains(document.activeElement) && !document.activeElement.matches("button")) { e.preventDefault(); tfNext(); return; }
+  if (e.key === "Enter" && document.activeElement === document.body && tfValue(tfIndex)) { e.preventDefault(); tfNext(); return; }
+  // A, B, C… pick an option when you're not typing somewhere
+  if (q.type === "choice" && /^[a-z]$/i.test(e.key) && !e.target.closest("input:not([type=radio]), textarea")) {
+    const radio = $$(`input[name="${q.key}"]`, tfForm)[e.key.toUpperCase().charCodeAt(0) - 65];
+    if (radio) { radio.checked = true; radio.dispatchEvent(new Event("change", { bubbles: true })); }
+  }
+});
+
+/* ---------- Discord button on /not-qualified and the waiting-list thank-you, when there's an invite link ---------- */
+if (CONFIG.discordUrl) {
+  $("#nq-discord").href = CONFIG.discordUrl;
+  $("#nq-discord").hidden = false;
+  $("#nq-check").hidden = true;
+  $("#tf-thanks-discord").href = CONFIG.discordUrl;
+  $("#tf-thanks-discord").hidden = $("#tf-thanks-discord-text").hidden = false;
+}
+
+/* ---------- Results galleries (tap an image to see it bigger) ---------- */
+const PROOF_DIR = "/assets/mert/proof/";
+// Sections stay hidden until PROOF has entries.
+$$("[data-proof-section]").forEach(sec => { sec.hidden = !PROOF.length; });
+$$("[data-proof]").forEach(grid => {
+  grid.innerHTML = PROOF.map(([name, w, h, alt]) =>
+    `<figure class="receipt"><button type="button" class="receipt__zoom" data-full="${PROOF_DIR + name}-full.webp"><img loading="lazy" decoding="async" src="${PROOF_DIR + name}.webp" width="${w}" height="${h}" alt="${esc(alt)}"></button></figure>`).join("");
+});
+const zoom = $("#zoom"), zoomImg = $("#zoom img");
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".receipt__zoom");
+  if (!btn) return;
+  const small = btn.querySelector("img"), full = btn.dataset.full;
+  zoomImg.src = small.currentSrc || small.src;   // show it straight away, then swap in the sharp version
+  zoomImg.alt = small.alt;
+  zoom.dataset.full = full;
+  const sharp = new Image();
+  sharp.onload = () => { if (zoom.open && zoom.dataset.full === full) zoomImg.src = full; };
+  sharp.src = full;
+  zoom.showModal();
+});
+zoom.addEventListener("click", () => zoom.close());
+
+/* ---------- Phone number with a country picker (waiting list) ---------- */
+// Uses Google's phone number rules (libphonenumber-js), loaded only when this question is on the page:
+// each country only accepts numbers that really exist there, the number is formatted as they type,
+// a typed "+44…" (or "0044…") picks the country, and US is the default. The hidden "phone" field gets the
+// full international number (+12015550123) and "country" the two-letter code, for the sheet and GoHighLevel.
+const phoneUi = (() => {
+  const LIB = "https://cdn.jsdelivr.net/npm/libphonenumber-js@1.13.15/";
+  const FLAGS = "https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/flags/4x3/";
+  // Used only if the rules can't load: a few common countries, any 6–12 digits.
+  const BASIC = { US: "1", CA: "1", GB: "44", AU: "61", DE: "49", AE: "971" };
+  const CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+  let lib = null, examples = null, loading = false, country = "US", step = null, built = false, active = -1;
+  let regionName = c => c;
+  try { const dn = new Intl.DisplayNames(["en"], { type: "region" }); regionName = c => dn.of(c) || c; } catch {}
+  const flagUrl = c => FLAGS + ({ AC: "sh-ac", TA: "sh-ta" }[c] || c.toLowerCase()) + ".svg";
+  const flagImg = c => `<img src="${flagUrl(c)}" alt="" width="30" height="22" loading="lazy" onerror="this.style.visibility='hidden'">`;
+  const callingCode = c => (lib ? lib.getCountryCallingCode(c) : BASIC[c] || "1");
+  const mainCountry = code => (lib ? new lib.Metadata().getCountryCodesForCallingCode(code)[0] : Object.keys(BASIC).find(c => BASIC[c] === code));
+  const $in = sel => step.querySelector(sel);
+  const fold = t => t.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+  function load() {
+    if (lib || loading) return;
+    loading = true;
+    const s = document.createElement("script");
+    s.src = LIB + "bundle/libphonenumber-max.js";
+    s.async = true;
+    s.onload = () => { lib = window.libphonenumber || null; built = false; refresh(); };
+    document.head.appendChild(s);
+    fetch(LIB + "examples.mobile.json").then(r => r.json()).then(j => { examples = j; refresh(); }).catch(() => {});
+  }
+  const example = (c = country) => { try { return lib && examples ? lib.getExampleNumber(c, examples).formatNational() : ""; } catch { return ""; } };
+
+  // → { ok, e164, country, national } for what they typed, read in the selected country unless it starts with + or 00.
+  function parse(raw) {
+    const text = raw.trim().replace(/^00/, "+");
+    if (!lib) {
+      const digits = text.replace(/\D/g, ""), code = callingCode(country);
+      const national = text.startsWith("+") ? digits.slice(code.length) : digits.replace(/^0/, "");
+      return { ok: national.length >= 6 && national.length <= 12, e164: "+" + code + national, country, national: text };
+    }
+    const p = lib.parsePhoneNumberFromString(text, country);
+    if (!p) return { ok: false };
+    const c = p.country || (p.countryCallingCode === callingCode(country) ? country : mainCountry(p.countryCallingCode));
+    return { ok: p.isValid(), e164: p.number, country: c, national: p.formatNational() };
+  }
+
+  function setCountry(c) {
+    if (!c) return;
+    country = c;
+    const btn = $in(".tf__cc");
+    btn.innerHTML = flagImg(c) + CHEV;
+    btn.setAttribute("aria-label", "Country: " + regionName(c) + " +" + callingCode(c));
+    $in(".tf__input").placeholder = example(c) || (c === "US" ? "(201) 555-0123" : "+" + callingCode(c));
+    $in('input[name="country"]').value = c;
+    if (built) $$(".tf__ccopt", step).forEach(li => li.setAttribute("aria-selected", String(li.dataset.c === c)));
+  }
+  function refresh() {
+    if (!step) return;
+    setCountry(country);
+    if (!$in(".tf__ccpanel").hidden) build();
+  }
+
+  function build() {
+    const list = $in(".tf__cclist");
+    const all = (lib ? lib.getCountries() : Object.keys(BASIC)).map(c => ({ c, name: regionName(c), code: callingCode(c) }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    list.innerHTML = all.map(x => `<li class="tf__ccopt" role="option" id="tf-cc-${x.c}" data-c="${x.c}" data-find="${esc(fold(x.name + " " + x.c))}" data-code="${x.code}" aria-selected="${x.c === country}">${flagImg(x.c)}<span>${esc(x.name)}</span><span class="tf__ccode">+${x.code}</span></li>`).join("")
+      + '<li class="tf__ccnone" hidden>No matching country</li>';
+    built = true;
+  }
+  const shown = () => $$(".tf__ccopt:not([hidden])", step);
+  function setActive(i) {
+    const items = shown();
+    $$(".tf__ccopt.is-active", step).forEach(li => li.classList.remove("is-active"));
+    active = Math.max(-1, Math.min(items.length - 1, i));
+    if (active >= 0) { items[active].classList.add("is-active"); items[active].scrollIntoView({ block: "nearest" }); }
+  }
+  function filter() {
+    const q = fold($in(".tf__ccsearch input").value.trim()), digits = q.replace(/^\+/, "");
+    let any = false;
+    $$(".tf__ccopt", step).forEach(li => {
+      const hit = !q || li.dataset.find.includes(q) || (/^\d+$/.test(digits) && li.dataset.code.startsWith(digits));
+      li.hidden = !hit; any = any || hit;
+    });
+    $in(".tf__ccnone").hidden = any;
+    setActive(q ? 0 : -1);
+  }
+  function open() {
+    if (!built) build();
+    const panel = $in(".tf__ccpanel"), search = $in(".tf__ccsearch input");
+    panel.hidden = false;
+    $in(".tf__cc").setAttribute("aria-expanded", "true");
+    search.value = "";
+    filter();
+    $in(`#tf-cc-${country}`)?.scrollIntoView({ block: "center" });
+    if (matchMedia("(hover: hover)").matches) search.focus({ preventScroll: true });
+  }
+  function close() {
+    if (!step || $in(".tf__ccpanel").hidden) return;
+    $in(".tf__ccpanel").hidden = true;
+    $in(".tf__cc").setAttribute("aria-expanded", "false");
+  }
+  function choose(c) {
+    setCountry(c);
+    close();
+    const input = $in(".tf__input");
+    if (lib && input.value.trim() && !input.value.trim().startsWith("+")) input.value = new lib.AsYouType(c).input(input.value);
+    syncHidden();
+    input.focus();
+  }
+
+  // The hidden fields only ever hold a checked number.
+  function syncHidden() {
+    const p = parse($in(".tf__input").value);
+    $in('input[name="phone"]').value = p.ok ? p.e164 : "";
+  }
+  // On OK / Enter: checks the number, picks the country it really belongs to, and shows it in local format.
+  function commit() {
+    const input = $in(".tf__input"), p = parse(input.value);
+    if (p.ok) {
+      setCountry(p.country);
+      input.value = p.national;
+      $in('input[name="phone"]').value = p.e164;
+    } else {
+      $in('input[name="phone"]').value = "";
+    }
+    input.setAttribute("aria-invalid", String(!p.ok));
+    return p.ok;
+  }
+  function error() {
+    const eg = example();
+    return "Please enter a valid " + regionName(country) + " number" + (eg ? ", like " + eg : "") + ".";
+  }
+
+  function attach(el) {
+    step = el;
+    built = false;
+    load();
+    setCountry(country);
+    const input = $in(".tf__input"), search = $in(".tf__ccsearch input");
+    $in(".tf__cc").addEventListener("click", () => ($in(".tf__ccpanel").hidden ? open() : close()));
+    input.addEventListener("input", e => {
+      input.removeAttribute("aria-invalid");
+      const atEnd = input.selectionStart === input.value.length;
+      const text = input.value.replace(/^00/, "+");
+      if (lib && text.startsWith("+")) {   // their own country code: pick that country as soon as it's clear
+        const t = new lib.AsYouType(), out = t.input(text), code = t.getCallingCode();
+        const c = t.getCountry() || (code && code !== callingCode(country) ? mainCountry(code) : null);
+        if (c && c !== country) setCountry(c);
+        if (atEnd && !e.inputType?.startsWith("delete")) input.value = out;
+      } else if (lib && atEnd && !e.inputType?.startsWith("delete")) {
+        input.value = new lib.AsYouType(country).input(text);   // (201) 555-0123 as they type
+      }
+      syncHidden();
+    });
+    input.addEventListener("blur", () => {
+      const p = input.value.trim() && parse(input.value);
+      if (p && p.ok) { setCountry(p.country); input.value = p.national; syncHidden(); }
+    });
+    search.addEventListener("input", filter);
+    search.addEventListener("keydown", e => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); setActive(active + (e.key === "ArrowDown" ? 1 : -1)); }
+      else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); const li = shown()[Math.max(active, 0)]; if (li) choose(li.dataset.c); }
+      else if (e.key === "Escape") { e.stopPropagation(); close(); $in(".tf__cc").focus(); }
+    });
+    $in(".tf__cclist").addEventListener("click", e => { const li = e.target.closest(".tf__ccopt"); if (li) choose(li.dataset.c); });
+    document.addEventListener("click", e => { if (!e.target.closest(".tf__ccpanel, .tf__cc")) close(); });
+  }
+
+  function html(id) {
+    return `<div class="tf__phone">
+          <button type="button" class="tf__cc" aria-haspopup="listbox" aria-expanded="false"></button>
+          <input class="tf__input" id="${id}" type="tel" inputmode="tel" autocomplete="tel" aria-labelledby="${id}-title">
+          <input type="hidden" name="phone"><input type="hidden" name="country">
+        </div>
+        <div class="tf__ccpanel" hidden>
+          <label class="tf__ccsearch"><input type="search" placeholder="Search countries" aria-label="Search countries" autocomplete="off">${SEARCH}</label>
+          <ul class="tf__cclist" role="listbox" aria-label="Countries"></ul>
+        </div>`;
+  }
+  return { html, attach, commit, error, close };
+})();
+
+/* ---------- Booking calendar (GoHighLevel, or Calendly) ---------- */
+// Name, email and phone come from the page 1 opt-in (or ?name=&email= in the link).
+function calendlyPrefill() {
+  const name = (lead.name || "").trim().replace(/\s+/g, " ");
+  const [firstName, ...rest] = name.split(" ");
+  // Send both forms so the name fills in whether the event asks for "Name" or "First / Last name".
+  return { name, firstName, lastName: rest.join(" "), email: (lead.email || "").trim() };
+}
+function initCalendar(el) {
+  if (!el) return;
+  const prefill = calendlyPrefill();
+  const key = prefill.name + "|" + prefill.email;
+  if (key === el.dataset.calKey) return;
+  if (CONFIG.ghlCalendarUrl) {
+    el.dataset.calKey = key;
+    el.classList.add("is-ghl");
+    // GHL fills its booking form from these when the calendar has "pre-populate fields" on.
+    const u = new URL(CONFIG.ghlCalendarUrl);
+    const phone = (lead.phone || "").replace(/[^\d+]/g, "");
+    // The calendar's form requires a last name; someone who only gave a first name gets "-" so they
+    // don't get stuck on it (it only shows as "Jordan -" on the contact in GHL).
+    Object.entries({ first_name: prefill.firstName, last_name: prefill.lastName || (prefill.firstName ? "-" : ""), name: prefill.name, email: prefill.email, phone })
+      .forEach(([k, v]) => { if (v) u.searchParams.set(k, v); });
+    el.innerHTML = `<iframe src="${u}" title="Book your call" allow="payment" scrolling="yes" style="width:100%;height:100%;border:0;overflow:auto"></iframe>`;
+    return;
+  }
+  if (!CONFIG.calendlyUrl) {   // no booking link yet: say where it goes instead of a blank box
+    el.innerHTML = '<div class="cal-ph"><strong>Calendar goes here</strong><span>Paste the GoHighLevel booking link into <code>ghlCalendarUrl</code> (or a Calendly link into <code>calendlyUrl</code>) in CONFIG.</span></div>';
+    return;
+  }
+  if (!window.Calendly) { loadCalendly(); setTimeout(() => initCalendar(el), 300); return; }
+  el.dataset.calKey = key;
+  el.innerHTML = "";
+  Calendly.initInlineWidget({ url: CONFIG.calendlyUrl, parentElement: el, prefill });
+}
+// Calendly's script only loads when Calendly is the calendar in use.
+function loadCalendly() {
+  if (document.querySelector('script[src*="assets.calendly.com"]')) return;
+  const js = document.createElement("script");
+  js.src = "https://assets.calendly.com/assets/external/widget.js";
+  js.async = true;
+  document.head.appendChild(js);
+}
+// The calendar tells the page when a call is booked; then move on to page 3.
+// GHL sends ["msgsndr-booking-complete", {…}]; Calendly sends { event: "calendly.event_scheduled" }.
+// Add ?debug to the page link to see every message the calendar sends in the browser console.
+function isGhlBooking(e) {
+  if (!CONFIG.ghlCalendarUrl) return false;
+  const ghlHost = /(^|\.)(leadconnectorhq\.com|msgsndr\.com)$/.test(new URL(e.origin).hostname)
+    || e.origin === new URL(CONFIG.ghlCalendarUrl).origin;
+  const text = typeof e.data === "string" ? e.data : Array.isArray(e.data) ? String(e.data[0]) : "";
+  return ghlHost && /booking-complete/i.test(text);
+}
+let bookingSent = false;
+window.addEventListener("message", e => {
+  if (/[?&]debug\b/.test(location.search)) console.log("[calendar message]", e.origin, e.data);
+  const calendly = e.origin === "https://calendly.com" && e.data?.event === "calendly.event_scheduled";
+  if (!calendly && !isGhlBooking(e)) return;
+  if (bookingSent) return;
+  bookingSent = true;
+  const answers = VIEW === "apply2" ? typeformData() : applicationData();
+  store.set("booking", { ...answers, bookedAt: Date.now() });
+  sendLead(answers, "booked");
+  setTimeout(() => go("booked"), 1500);
+});
+
+/* ---------- "Just joined" toast ---------- */
+const toast = (() => {
+  const el = $("#toast"), list = CONFIG.recentJoins;
+  let i = 0, timer = null;
+  const FIELDS = "input, textarea, select, .dd__btn";
+  const typing = () => !!document.activeElement?.matches(FIELDS);
+  function show() {
+    if (typing()) { timer = setTimeout(show, 1500); return; }   // wait until they've left the form field
+    const p = list[i++ % list.length];
+    $("#toast-name").textContent = p.name;
+    $("#toast-city").textContent = p.city;
+    $("#toast-av").textContent = p.name[0];
+    el.classList.remove("is-out");
+    timer = setTimeout(() => { el.classList.add("is-out"); timer = setTimeout(show, 7000); }, 5000);
+  }
+  // Hide it the moment someone taps into a form field, so it never sits on top of the phone keyboard.
+  document.addEventListener("focusin", e => { if (e.target.matches(FIELDS)) el.classList.add("is-out"); });
+  return {
+    active(on) {
+      clearTimeout(timer); el.classList.add("is-out");
+      if (on && list.length) timer = setTimeout(show, 2500);
+    }
+  };
+})();
+
+route();
+</script>
+</body>
+</html>

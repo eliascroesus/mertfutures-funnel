@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call Booked | MertFutures</title>
+<meta name="description" content="Your call with Mert is booked. Watch the video and confirm your call.">
+<link rel="canonical" href="https://mertfutures.com/booked">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/site/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Connect to Vimeo early so the video starts sooner -->
+<link rel="preconnect" href="https://player.vimeo.com">
+<link rel="preconnect" href="https://i.vimeocdn.com">
+<link rel="preconnect" href="https://f.vimeocdn.com">
+<link rel="dns-prefetch" href="https://vimeo.com">
+<link rel="stylesheet" href="/assets/site/style.css">
+</head>
+<body data-page="booked">
+
+<div class="gbar"><span class="dot"></span><span><b>Free</b> NQ &amp; ES order flow Discord with Mert</span></div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 class="warn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 1 21h22L12 2z"/><path d="M12 9v5m0 3v.5" stroke="#070707" stroke-width="2.4" stroke-linecap="round"/></svg><span>Wait! Your Call Is <span class="accent">NOT Confirmed</span> Yet</span></h1>
+
+    <h2 class="step-h"><b>Step #1 of 3:</b> Watch This Video</h2>
+    <!-- The thank-you video is 4:3; the box takes the real shape once it loads. -->
+    <div class="vslframe" id="next-steps" style="aspect-ratio: 4 / 3; max-width: 800px">
+      <div class="vph"><span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></span><span class="vtxt">Loading video…</span></div>
+    </div>
+
+    <h2 class="step-h step-h--gap"><b>Step #2 of 3:</b> Confirm Your Call Now</h2>
+    <!-- Three things to do now. The calendar links are filled in by the script (with the call time when the calendar sent it). -->
+    <div class="csteps">
+      <article class="cstep">
+        <span class="cstep__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></span>
+        <h3><b>Step 1:</b> Confirm Your Appointment</h3>
+        <p>Go to your email and reply <b>"Yes"</b> or <b>"Ready"</b> to confirm.</p>
+      </article>
+      <article class="cstep">
+        <span class="cstep__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4c4.97 0 9 3.13 9 7s-4.03 7-9 7c-1.1 0-2.15-.15-3.12-.43L4 19.5l1.4-3.6C3.9 14.6 3 12.9 3 11c0-3.87 4.03-7 9-7z"/><path d="M8 10h8M8 13h5"/></svg></span>
+        <h3><b>Step 2:</b> Check Your Messages</h3>
+        <p>Open iMessage or WhatsApp and reply to the text we'll send you shortly.</p>
+      </article>
+      <article class="cstep">
+        <span class="cstep__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9 15.5 2 2 4-4"/></svg></span>
+        <h3><b>Step 3:</b> Add It To Your Calendar</h3>
+        <p id="addcal-hint">Tap an icon below to add the call to your calendar.</p>
+        <div class="addcal">
+          <a class="addcal__btn" id="addcal-google" href="https://calendar.google.com/calendar/render?action=TEMPLATE" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="24" height="23" rx="3.5" fill="#fff" stroke="#4285f4" stroke-width="2"/><path d="M4 8.5A3.5 3.5 0 0 1 7.5 5h17A3.5 3.5 0 0 1 28 8.5V11H4z" fill="#4285f4"/><path d="M10 15h3M10 19h3M10 23h3M15 15h3M15 19h3M15 23h3M20 15h3M20 19h3" stroke="#34a853" stroke-width="2"/><path d="M20 23h3" stroke="#ea4335" stroke-width="2"/><path d="M10 3v4M22 3v4" stroke="#1a73e8" stroke-width="2.2" stroke-linecap="round"/></svg><span>Google</span></a>
+          <a class="addcal__btn" id="addcal-apple" href="#" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="5.5" fill="#fff" stroke="#d1d1d6" stroke-width="1.5"/><path d="M4 9.5A5.5 5.5 0 0 1 9.5 4h13A5.5 5.5 0 0 1 28 9.5V11H4z" fill="#ff3b30"/><path d="M9.5 15.5h2.5M14.75 15.5h2.5M20 15.5h2.5M9.5 19.5h2.5M14.75 19.5h2.5M20 19.5h2.5M9.5 23.5h2.5M14.75 23.5h2.5" stroke="#3a3a3c" stroke-width="2.2"/><path d="M20 23.5h2.5" stroke="#ff3b30" stroke-width="2.2"/></svg><span>Apple</span></a>
+          <a class="addcal__btn" id="addcal-outlook" href="https://outlook.live.com/calendar/0/deeplink/compose" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="12" y="6" width="17" height="20" rx="2" fill="#28a8ea"/><path d="M15 12h11M15 16h11M15 20h7" stroke="#fff" stroke-width="1.6"/><rect x="3" y="9" width="14" height="14" rx="2" fill="#0364b8"/><ellipse cx="10" cy="16" rx="3.3" ry="4" fill="none" stroke="#fff" stroke-width="2"/></svg><span>Outlook</span></a>
+        </div>
+      </article>
+    </div>
+    <p class="confirm-note">Can't find the email? <b>Check Spam and Promotions.</b></p>
+
+    <h2 class="step-h step-h--gap"><b>Step #3 of 3:</b> Watch The FAQs</h2>
+    <div class="vid-grid" id="faq-videos"></div>
+  </div>
+</header>
+
+<!-- Results straight under the content above, no heading -->
+<section class="section results-under-form" aria-label="Results">
+  <div class="wrap">
+    <div class="wall" data-proof></div>
+    <p class="wall-rnt">Individual results. Not typical and not a promise of what you will earn.</p>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="wrap">
+    <div class="kicker">The mentorship</div>
+    <h2>Inside <span class="accent">Order Flow Elite</span></h2>
+    <div class="story">
+      <article class="story-card">
+        <div class="story-stat"><b>1–8</b><span>weeks</span></div>
+        <div class="txt"><div class="when">Developing</div>
+          <p>You build your plan with Mert, then move it <b>from replay to sim to one micro contract</b>, one stage at a time.</p></div>
+      </article>
+      <article class="story-card">
+        <div class="story-stat"><b>9–12</b><span>weeks</span></div>
+        <div class="txt"><div class="when">Following</div>
+          <p>You trade your plan live and <b>Mert follows along</b>, then steps back week by week.</p></div>
+      </article>
+      <article class="story-card">
+        <div class="story-stat"><b>1:1</b><span>reviews</span></div>
+        <div class="txt"><div class="when">Your own trades</div>
+          <p>Mert reviews <b>your recorded executions</b>, so the feedback is about your clicks, not someone else's.</p></div>
+      </article>
+      <article class="story-card">
+        <div class="story-stat"><b>Any</b><span>prop firm</span></div>
+        <div class="txt"><div class="when">Built around your rules</div>
+          <p>Risk is set up around <b>your prop firm's rules</b>, whichever firm you trade.</p></div>
+      </article>
+    </div>
+    <blockquote class="story-quote">"You don't need more information. You need to execute what you already know when it's live."<cite>Mert</cite></blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand"><img src="/assets/site/mert-logo.png" width="28" height="28" loading="lazy" alt="">MertFutures</div>
+    <nav class="foot-nav"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a><a href="/disclaimer">Earnings &amp; Risk Disclaimer</a><a href="mailto:support@mertfutures.com">Contact</a></nav>
+    <p><b>Earnings &amp; Risk Disclaimer:</b> Any results shown are Mert's own or those of individual community members, and are <b>not typical</b>. <b>Trading involves substantial risk of loss and is not suitable for everyone. Most people who trade lose money, and most people who take prop firm evaluations don't pass them or get paid out.</b> We don't have data showing what a typical student earns, so don't expect results like these. Payouts shown are gross payouts, not profit, before costs like evaluation and reset fees, platform and data fees, and taxes. Past performance is not indicative of future results. We do not promise or guarantee that you will make any money; your results depend on your effort, skills, experience, the money you have available and market conditions. Our content is for education only and is not financial, investment or trading advice. <a href="/disclaimer">Read the full Earnings &amp; Risk Disclaimer</a>.</p>
+    <p>This site is not part of the Facebook, Instagram or YouTube websites, or of Meta Platforms, Inc. or Google LLC, and is not endorsed by them in any way. Facebook and Instagram are trademarks of Meta Platforms, Inc. YouTube is a trademark of Google LLC.</p>
+    <p>© 2026 MertFutures. All rights reserved.</p>
+  </div>
+</footer>
+
+<dialog class="zoom" id="zoom"><img alt=""></dialog>
+
+<script defer src="/assets/vimeo-player.min.js"></script>
+<script defer src="/assets/track.js"></script>
+<script defer src="/assets/lead-form.js"></script>
+<script defer src="/assets/call-calendar.js"></script>
+<script defer src="/assets/site/funnel.js"></script>
+</body>
+</html>

@@ -1,11 +1,58 @@
 {
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/discord",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/site/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/mert/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(assets/vimeo-player.min.js|assets/site/mert-logo.png|favicon.ico|favicon.png|apple-touch-icon.png|og-image.jpg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/discord", "destination": "/index.html" },
-    { "source": "/apply", "destination": "/index.html" },
-    { "source": "/apply-2", "destination": "/index.html" },
-    { "source": "/booked", "destination": "/index.html" },
-    { "source": "/not-qualified", "destination": "/index.html" },
-    { "source": "/waitlist", "destination": "/index.html" }
+    {
+      "source": "/go/:slug",
+      "destination": "/api/go?slug=:slug"
+    }
   ]
 }

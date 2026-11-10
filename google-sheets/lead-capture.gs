@@ -1,16 +1,16 @@
 /**
- * Lead capture for Mert's ES & NQ order flow funnel (MertFutures).
+ * Lead capture for Mert's NQ & ES order flow funnel (MertFutures).
  *   - Page 1 opt-in        → adds a new row (name, email, phone, tracking, A/B version).
  *   - Page 2 application   → fills that person's answers into their row (matched by email).
- *                            V1 (/apply) fills Main Problem, Experience, Main Goal, Investment,
- *                            Ready To Fix, Instagram;
- *                            V2 (/apply-2) fills Situation, Evals Bought, Trading Schedule, Biggest Goal,
- *                            Obstacles, Instagram, Investment.
- *   - Waiting list         → the /apply-2 questions on /waitlist (Version "Waitlist"); adds the row itself
- *                            when the person never opted in on page 1.
- *   - Calendar booking     → stamps "Call Booked At" on their row.
+ *                            V1 (/apply, one question at a time) fills Situation, Evals Bought, Trading Schedule,
+ *                            Biggest Goal, Obstacles, Instagram, Investment;
+ *                            V2 (/apply-2, form beside the calendar) fills Main Problem, Experience, Main Goal,
+ *                            Investment, Ready To Fix, Instagram.
+ *   - Booking a call       → stamps "Call Booked At" on their row.
+ *   - Source Link          → the /go/… tracked link (or app/site) they came from, as on /admin.
  *   - GoHighLevel (optional) → the same lead also goes to GoHighLevel; see further down this file.
- *   - Telegram (optional)  → every booked call is posted to a Telegram group; see the bottom of this file.
+ *     Leads already in the sheet are sent with the sheet's "GoHighLevel" menu → "Push old leads to GoHighLevel".
+ *   - Telegram (optional)  → booked calls are posted to a Telegram group; see the bottom of this file.
  *
  * Setup (once):
  *   1. Create a Google Sheet called "Mert - Master Lead Sheet" (sheets.new) and open it.
@@ -19,8 +19,8 @@
  *      This writes the column headers into row 1.
  *   4. Deploy → New deployment → type "Web app".
  *      Execute as: Me. Who has access: Anyone. Click Deploy.
- *   5. Copy the Web app URL (ends in /exec) and paste it into
- *      leadSheetUrl in the CONFIG block of index.html.
+ *   5. Copy the Web app URL (ends in /exec) and paste it into leadSheetUrl in CONFIG in
+ *      assets/site/funnel.js.
  *
  * Updating this script later: paste the new code, save, run "setup" once (adds any new
  * column headers), then Deploy → Manage deployments → pencil icon → Version: New version
@@ -59,6 +59,8 @@ const COLUMNS = [
   ['Obstacles', 'obstacles'],
   ['Main Goal', 'motivation'],
   ['Ready To Fix', 'ready'],
+  ['Sent To GHL', '@ghl'],   // when the lead was last sent to GoHighLevel; empty = not sent yet
+  ['Source Link', 'source_link'],   // the /go/… link they came from, as on /admin (or the app/site)
   ['Evals Bought', 'evals'],
   ['Trading Schedule', 'schedule'],
 ];
@@ -85,10 +87,16 @@ function doPost(e) {
     lock.releaseLock();
   }
   // GoHighLevel goes after the sheet is saved and unlocked, so it can never hold up or break the sheet.
+  // "Sent To GHL" gets the time when it worked, and is emptied when it didn't, so the menu's
+  // "Push old leads to GoHighLevel" picks that lead up again.
+  // A row that was already in the sheet but never sent (a lead from before GoHighLevel was set up, or one
+  // whose send failed) goes over whole on their next step, so GoHighLevel gets everything they did, not just this.
   try {
-    syncToGhl_(type, params);
+    const sent = result.unsent ? syncRow_(result.row) : syncToGhl_(type, params);
+    if (sent && result.row) markSent_(result.row, new Date());
   } catch (err) {
     console.error('GoHighLevel: ' + err);
+    if (result.row) markSent_(result.row, '');
   }
   return json_(result);
 }
@@ -109,6 +117,7 @@ function saveToSheet_(type, params) {
   const row = rowNum
     ? sheet.getRange(rowNum, 1, 1, COLUMNS.length).getValues()[0].map(v => (typeof v === 'string' ? clean_(v) : v))
     : COLUMNS.map(([, field]) => (field === '@created' ? now : ''));
+  const unsent = !!rowNum && !row[COLUMNS.findIndex(([, f]) => f === '@ghl')];
   if (!rowNum) rowNum = sheet.getLastRow() + 1;
 
   COLUMNS.forEach(([, field], i) => {
@@ -120,7 +129,7 @@ function saveToSheet_(type, params) {
   if (type === 'booked') row[COLUMNS.findIndex(([, f]) => f === '@booked')] = now;
 
   sheet.getRange(rowNum, 1, 1, COLUMNS.length).setValues([row]);
-  return { ok: true, row: rowNum };
+  return { ok: true, row: rowNum, unsent: unsent };
 }
 
 // Open the Web app URL in a browser to check the deployment is live.
@@ -177,17 +186,19 @@ function json_(obj) {
  * (Project Settings, the gear icon → Script properties):
  *   GHL_TOKEN        the sub-account's Private Integration token
  *   GHL_LOCATION_ID  the sub-account's Location ID
- * Then pick "checkGhl" in the function dropdown and Run it: the log shows what it found and what's missing.
+ * Then pick "checkGhl" in the function dropdown and Run it (or the sheet's GoHighLevel menu → Check the
+ * connection): it shows what it found and what's missing.
  *
  * On every event it creates or updates the contact (GHL matches by email/phone, so it's always the same
  * contact): name, email, phone, country, and any contact custom field whose name matches a sheet column
  * header ("Instagram", "Investment", "Main Goal"…). Opportunity custom fields with a matching name are filled too
  * (lead cards in a pipeline can only show opportunity fields). On the funnel steps in GHL_STEPS it also adds that
  * step's tag and puts their opportunity in that step's pipeline and stage:
- *   - Opt-in            → the Discord pipeline, for the setters to reach out.
- *   - Waiting list      → Waitlist in Discord, plus a note with all their answers.
- *   - Application       → Applied (or Not Qualified) in Discord, plus a note with all their answers.
- *   - Booked a call     → the same opportunity moves over to the 1:1 Mentorship pipeline.
+ *   - Opt-in on /discord   → the Discord pipeline, for the setters to reach out.
+ *   - Waitlist contact info → the Discord pipeline too (name, email, phone given), even if they stop there.
+ *   - Finished waitlist    → Waitlist in Discord, plus a note with all their answers.
+ *   - Application          → Applied (or Not Qualified) in Discord, plus a note with all their answers.
+ *   - Booked a call        → the same opportunity moves over to the 1:1 Mentorship pipeline.
  * Opportunities only move forward: 1:1 Mentorship counts as further along than Discord, and inside a
  * pipeline a stage further right counts as further along. So when a setter has moved someone along by
  * hand, the funnel never drags them back.
@@ -198,28 +209,31 @@ const GHL_PIPELINES = ['Discord', '1:1 Mentorship'];
 // Funnel step → pipeline, stage and tag. Stage names must match GHL (capitals aside);
 // leave a stage as '' to use the pipeline's first stage. If GHL doesn't have the stage, the first stage is used.
 const GHL_STEPS = {
-  optin:         { pipeline: 'Discord',        stage: '',              tag: 'mert-optin' },
-  waitlist:      { pipeline: 'Discord',        stage: 'Waitlist',      tag: 'mert-waitlist' },
-  applied:       { pipeline: 'Discord',        stage: 'Applied',       tag: 'mert-applied' },
-  not_qualified: { pipeline: 'Discord',        stage: 'Not Qualified', tag: 'mert-not-qualified' },
-  booked:        { pipeline: '1:1 Mentorship', stage: '',              tag: 'mert-booked' },
+  optin:            { pipeline: 'Discord',        stage: '',              tag: 'mert-optin' },
+  waitlist_started: { pipeline: 'Discord',        stage: '',              tag: 'mert-waitlist-started' },
+  waitlist:         { pipeline: 'Discord',        stage: 'Waitlist',      tag: 'mert-waitlist' },
+  applied:          { pipeline: 'Discord',        stage: 'Applied',       tag: 'mert-applied' },
+  not_qualified:    { pipeline: 'Discord',        stage: 'Not Qualified', tag: 'mert-not-qualified' },
+  booked:           { pipeline: '1:1 Mentorship', stage: '',              tag: 'mert-booked' },
 };
 // The application answers that go into the note on the contact, in this order.
 const GHL_NOTE_FIELDS = ['situation', 'reason', 'experience', 'evals', 'schedule', 'motivation', 'goal', 'obstacles', 'ready', 'investment', 'instagram'];
 // Sheet fields that go into GHL's own contact fields rather than custom fields.
 const GHL_STANDARD = ['name', 'email', 'phone', 'country'];
 
+// Sends one funnel event to GoHighLevel. Returns false when GoHighLevel isn't set up (nothing sent).
 function syncToGhl_(type, params) {
   const ghl = ghlConfig_();
-  if (!ghl || !params.email) return;
+  if (!ghl || !params.email) return false;
   // The page marks a finished application with "stage"; an answer on its own only updates fields.
   const step = type === 'optin' || type === 'booked' ? type : GHL_STEPS[params.stage] ? params.stage : '';
   const setup = ghlSetup_(ghl);
   const contactId = ghlUpsertContact_(ghl, setup, params);
-  if (!step) return;
+  if (!step) return true;
   ghl_(ghl, 'post', '/contacts/' + contactId + '/tags', { tags: [GHL_STEPS[step].tag] });
   ghlMoveOpportunity_(ghl, setup, contactId, params, step);
   if (step === 'applied' || step === 'not_qualified' || step === 'waitlist') ghlNote_(ghl, contactId, params, step);
+  return true;
 }
 
 // A finished application also goes on the contact as one readable note, so setters and closers
@@ -230,7 +244,7 @@ function ghlNote_(ghl, contactId, params, step) {
     .filter(([col, value]) => col && value)
     .map(([col, value]) => col[0] + ': ' + value);
   if (!lines.length) return;
-  const head = { applied: '✅ Application', waitlist: '⏳ Waiting list', not_qualified: '❌ Application (not qualified)' }[step]
+  const head = { applied: '✅ Application', not_qualified: '❌ Application (not qualified)', waitlist: '📝 Waiting list application' }[step]
     + (params.version ? ' · ' + params.version + ({ V1: ' /apply', V2: ' /apply-2', Waitlist: ' /waitlist' }[params.version] || '') : '');
   try {
     ghl_(ghl, 'post', '/contacts/' + contactId + '/notes', { body: head + '\n\n' + lines.join('\n') });
@@ -241,18 +255,23 @@ function ghlNote_(ghl, contactId, params, step) {
 
 // Run this from the editor after adding the Script properties: checks the connection and lists what it matched.
 function checkGhl() {
+  ghlReport_().forEach(line => console.log(line));
+}
+
+function ghlReport_() {
   const ghl = ghlConfig_();
-  if (!ghl) return console.log('Add GHL_TOKEN and GHL_LOCATION_ID under Project Settings → Script properties first.');
-  const setup = ghlSetup_(ghl, true);
-  console.log(setup.errors.length ? 'Problems above. A 401 means a wrong token or Location ID; a 403 means the token is missing a scope.' : 'Connected.');
+  if (!ghl) return ['Add GHL_TOKEN and GHL_LOCATION_ID under Project Settings → Script properties first.'];
+  const setup = ghlSetup_(ghl, true), out = [];
+  setup.errors.forEach(e => out.push('Problem: ' + e));
+  out.push(setup.errors.length ? 'A 401 means a wrong token or Location ID; a 403 means the token is missing a scope.' : 'Connected.');
   GHL_PIPELINES.forEach(name => {
     const p = setup.pipelines[norm_(name)];
-    console.log('Pipeline "' + name + '": ' + (p ? 'found, stages: ' + p.stages.map(s => s.name).join(' → ')
+    out.push('Pipeline "' + name + '": ' + (p ? 'found, stages: ' + p.stages.map(s => s.name).join(' → ')
       : 'NOT FOUND (create it under Opportunities → Pipelines, or fix the name in GHL_PIPELINES)'));
   });
   Object.keys(GHL_STEPS).forEach(step => {
     const target = ghlTarget_(setup, step);
-    console.log('  ' + step + ' → ' + (target ? '"' + target.pipeline.name + '" / "' + target.stage.name + '"'
+    out.push('  ' + step + ' → ' + (target ? '"' + target.pipeline.name + '" / "' + target.stage.name + '"'
       + (target.missing ? '  (no "' + GHL_STEPS[step].stage + '" stage yet, so the first stage for now)' : '')
       : 'NOT FOUND: check the pipeline names in GHL_PIPELINES') + ', tag ' + GHL_STEPS[step].tag);
   });
@@ -262,9 +281,10 @@ function checkGhl() {
     (setup.fields[norm_(header)] ? filled : skipped).push(header);
     if ((setup.oppFields || {})[norm_(header)]) onCards.push(header);
   });
-  console.log('Contact custom fields that will be filled: ' + (filled.join(', ') || 'none yet'));
-  console.log('Sheet columns with no matching contact custom field (skipped): ' + (skipped.join(', ') || 'none'));
-  console.log('Opportunity custom fields that will be filled (these can show on lead cards): ' + (onCards.join(', ') || 'none yet'));
+  out.push('Contact custom fields that will be filled: ' + (filled.join(', ') || 'none yet'));
+  out.push('Sheet columns with no matching contact custom field (skipped): ' + (skipped.join(', ') || 'none'));
+  out.push('Opportunity custom fields that will be filled (these can show on lead cards): ' + (onCards.join(', ') || 'none yet'));
+  return out;
 }
 
 function ghlConfig_() {
@@ -294,7 +314,7 @@ function ghl_(ghl, method, path, body) {
 // The pipelines and their stages, and the contact custom fields by name. Cached for 10 minutes.
 // Each lookup can fail on its own (e.g. a missing token scope) without stopping the contact itself.
 function ghlSetup_(ghl, fresh) {
-  const cache = CacheService.getScriptCache(), cacheKey = 'ghl-setup-mert1-' + ghl.locationId;
+  const cache = CacheService.getScriptCache(), cacheKey = 'ghl-setup3-' + ghl.locationId;
   const cached = !fresh && cache.get(cacheKey);
   if (cached) return JSON.parse(cached);
   const loc = encodeURIComponent(ghl.locationId), errors = [];
@@ -339,16 +359,33 @@ function ghlRank_(setup, pipelineId, stageId) {
 
 function ghlUpsertContact_(ghl, setup, params) {
   const body = { locationId: ghl.locationId, email: String(params.email).trim() };
-  const [firstName, ...rest] = String(params.name || '').trim().split(/\s+/);
+  const [firstName, ...rest] = tidyName_(params.name).split(' ');
   if (firstName) body.firstName = firstName;
   if (rest.length) body.lastName = rest.join(' ');
-  const phone = e164_(params.phone);
+  const phone = e164_(params.phone, params.timezone);
   if (phone) body.phone = phone;
   if (/^[A-Z]{2}$/.test(params.country || '')) body.country = params.country;
   if (params.version) body.source = 'Mert funnel ' + params.version;
   const customFields = ghlCustomFields_(setup.fields, params);
   if (customFields.length) body.customFields = customFields;
-  return ghl_(ghl, 'post', '/contacts/upsert', body).contact.id;
+  try {
+    return ghl_(ghl, 'post', '/contacts/upsert', body).contact.id;
+  } catch (err) {
+    // A number GHL can't read (e.g. an old row typed without its country code) shouldn't lose the lead:
+    // the contact goes in without it, and the number stays in the sheet.
+    if (!body.phone) throw err;
+    console.warn('GoHighLevel: phone "' + params.phone + '" not accepted, sending ' + body.email + ' without it: ' + err);
+    delete body.phone;
+    return ghl_(ghl, 'post', '/contacts/upsert', body).contact.id;
+  }
+}
+
+// "jordan lee" or "JORDAN LEE" → "Jordan Lee", so messages say "Hey Jordan". Names typed with their own
+// capitals ("McKenzie", "de la Cruz") are left exactly as typed.
+function tidyName_(raw) {
+  const name = String(raw || '').trim().replace(/\s+/g, ' ');
+  if (name !== name.toLowerCase() && name !== name.toUpperCase()) return name;
+  return name.toLowerCase().replace(/(^|[\s\-'’])(\p{L})/gu, (m, sep, ch) => sep + ch.toUpperCase());
 }
 
 // [{ id, field_value }] for every custom field (by id, from ghlSetup_) whose name matches a sheet column with an answer.
@@ -374,7 +411,7 @@ function ghlMoveOpportunity_(ghl, setup, contactId, params, step) {
   if (!found.length) {
     const body = {
       locationId: ghl.locationId, pipelineId: target.pipeline.id, pipelineStageId: target.stage.id,
-      contactId: contactId, name: String(params.name || params.email).trim(), status: 'open',
+      contactId: contactId, name: tidyName_(params.name) || String(params.email).trim(), status: 'open',
     };
     if (customFields.length) body.customFields = customFields;
     ghl_(ghl, 'post', '/opportunities/', body);
@@ -391,17 +428,178 @@ function ghlMoveOpportunity_(ghl, setup, contactId, params, step) {
 }
 
 // "+1 5551234567" → "+15551234567". If they typed their own "+44…" in the number box, that one wins.
-// With no "+" at all, the digits go as they are.
-function e164_(phone) {
+// With no "+" at all (early waiting-list rows, e.g. "7947275612"), the country code comes from their time zone
+// ("Europe/London" → +447947275612); for a time zone not in TZ_CALLING_CODES the digits go as they are.
+function e164_(phone, timezone) {
   const text = String(phone || '');
   const plus = text.lastIndexOf('+');
-  const digits = (plus < 0 ? text : text.slice(plus)).replace(/\D/g, '');
+  let digits = (plus < 0 ? text : text.slice(plus)).replace(/\D/g, '');
   if (digits.length < 7) return '';
-  return plus < 0 ? digits : '+' + digits;
+  if (plus >= 0) return '+' + digits;
+  if (digits.startsWith('00')) return '+' + digits.slice(2);   // "0044…"
+  const code = TZ_CALLING_CODES[String(timezone || '').trim()];
+  if (!code) return digits;
+  if (code === '1') return '+' + (digits.length === 11 && digits[0] === '1' ? digits : '1' + digits);
+  if (digits.startsWith(code) && digits.length >= 11) return '+' + digits;   // code typed without the "+"
+  return '+' + code + digits.replace(/^0/, '');   // national number: "07947…" → "+447947…"
 }
+// Time zone → country calling code, for numbers saved without one. Only zones that are a single country.
+const TZ_CALLING_CODES = {
+  'America/New_York': '1', 'America/Chicago': '1', 'America/Denver': '1', 'America/Los_Angeles': '1',
+  'America/Phoenix': '1', 'America/Anchorage': '1', 'America/Detroit': '1', 'America/Indiana/Indianapolis': '1',
+  'Pacific/Honolulu': '1', 'America/Toronto': '1', 'America/Vancouver': '1', 'America/Edmonton': '1',
+  'America/Winnipeg': '1', 'America/Halifax': '1', 'America/Regina': '1', 'America/Jamaica': '1',
+  'America/Puerto_Rico': '1', 'America/Port_of_Spain': '1', 'America/Nassau': '1', 'America/Barbados': '1',
+  'Europe/London': '44', 'Europe/Dublin': '353', 'Europe/Berlin': '49', 'Europe/Paris': '33',
+  'Europe/Amsterdam': '31', 'Europe/Brussels': '32', 'Europe/Madrid': '34', 'Europe/Lisbon': '351',
+  'Europe/Zurich': '41', 'Europe/Vienna': '43', 'Europe/Copenhagen': '45', 'Europe/Stockholm': '46',
+  'Europe/Oslo': '47', 'Europe/Helsinki': '358', 'Europe/Warsaw': '48', 'Europe/Athens': '30',
+  'Europe/Istanbul': '90', 'Europe/Bucharest': '40',
+  'Africa/Casablanca': '212', 'Africa/Algiers': '213', 'Africa/Tunis': '216', 'Africa/Tripoli': '218',
+  'Africa/Cairo': '20', 'Africa/Lagos': '234', 'Africa/Accra': '233', 'Africa/Nairobi': '254',
+  'Africa/Kampala': '256', 'Africa/Dar_es_Salaam': '255', 'Africa/Addis_Ababa': '251', 'Africa/Kigali': '250',
+  'Africa/Johannesburg': '27', 'Africa/Harare': '263', 'Africa/Lusaka': '260', 'Africa/Mogadishu': '252',
+  'Africa/Khartoum': '249', 'Africa/Dakar': '221', 'Africa/Abidjan': '225', 'Africa/Douala': '237',
+  'Asia/Dubai': '971', 'Asia/Riyadh': '966', 'Asia/Qatar': '974', 'Asia/Kuwait': '965', 'Asia/Karachi': '92',
+  'Asia/Kolkata': '91', 'Asia/Calcutta': '91', 'Asia/Manila': '63', 'Asia/Singapore': '65',
+  'Australia/Sydney': '61', 'Australia/Melbourne': '61', 'Australia/Brisbane': '61', 'Australia/Perth': '61',
+  'Australia/Adelaide': '61', 'Pacific/Auckland': '64',
+  'America/Sao_Paulo': '55', 'America/Mexico_City': '52', 'America/Bogota': '57', 'America/Paramaribo': '597',
+};
 
 function norm_(text) {
   return String(text || '').trim().toLowerCase();
+}
+
+/* ---------- Leads already in the sheet → GoHighLevel ----------
+ * Once GoHighLevel is set up, every new lead goes there as it comes in and gets a time in "Sent To GHL".
+ * Leads from before that (and any whose send failed) have that column empty. They're only sent when you
+ * choose to, from the sheet's menu: GoHighLevel → "Push old leads to GoHighLevel". Each one goes to the
+ * furthest step it reached, with the tags of every step on the way (like a new lead), plus GHL_IMPORT_TAG
+ * first, so a workflow can leave imported leads out ("Contact Tag" filter: doesn't have mert-imported).
+ * Safe to run again: rows with a time in "Sent To GHL" are skipped. "Preview" only counts, it sends nothing.
+ */
+const GHL_IMPORT_TAG = 'mert-imported';
+// Same as CONFIG.disqualify in assets/site/funnel.js and old/index.html: these investment answers are "not qualified".
+const DISQUALIFY = ['Under $1,000', "I want to, but don't have the resources to fund my goals"];
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('GoHighLevel')
+    .addItem('Check the connection', 'checkGhlMenu')
+    .addItem('Preview old leads (sends nothing)', 'previewOldLeads')
+    .addItem('Push old leads to GoHighLevel', 'pushOldLeads')
+    .addToUi();
+}
+
+function checkGhlMenu() {
+  SpreadsheetApp.getUi().alert('GoHighLevel', ghlReport_().join('\n'), SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+// The rows not sent yet, each with its answers by form field and the funnel steps it reached.
+function oldLeads_() {
+  const sheet = getSheet_();
+  ensureHeaders_(sheet);
+  const last = sheet.getLastRow();
+  if (last < 2) return [];
+  return sheet.getRange(2, 1, last - 1, COLUMNS.length).getValues()
+    .map((cells, i) => rowLead_(cells, i + 2))
+    .filter(lead => !lead['@ghl'] && lead.email);
+}
+
+// One sheet row as { form field: value }, plus its row number and the funnel steps it reached.
+function rowLead_(cells, rowNum) {
+  const lead = { row: rowNum };
+  COLUMNS.forEach(([, field], c) => {
+    const v = cells[c];
+    lead[field] = v instanceof Date ? v : String(v == null ? '' : v).replace(/^'/, '').trim();
+  });
+  lead.steps = leadSteps_(lead);
+  return lead;
+}
+
+// The funnel steps a sheet row shows they reached, in order. Like the funnel itself: a finished application
+// is one with an investment answer (the last question), and a waiting-list visitor who stopped part way
+// is in the Discord pipeline's first stage, like an opt-in.
+function leadSteps_(lead) {
+  const steps = [lead.version === 'Waitlist' ? 'waitlist_started' : 'optin'];
+  if (lead.investment) steps.push(DISQUALIFY.indexOf(lead.investment) >= 0 ? 'not_qualified' : lead.version === 'Waitlist' ? 'waitlist' : 'applied');
+  if (lead['@booked']) steps.push('booked');
+  return steps;
+}
+
+function stepCounts_(leads) {
+  const names = { optin: 'opted in only', waitlist_started: "started the waiting list but didn't finish",
+    waitlist: 'finished the waiting list', applied: 'applied', not_qualified: 'not qualified', booked: 'booked a call', '': 'contact only' };
+  const counts = {};
+  leads.forEach(l => { const last = l.steps[l.steps.length - 1] || ''; counts[last] = (counts[last] || 0) + 1; });
+  return Object.keys(counts).map(k => '  ' + counts[k] + ' ' + names[k] + (k ? ' → ' + GHL_STEPS[k].pipeline + ' / ' + (GHL_STEPS[k].stage || 'first stage') : ''));
+}
+
+function previewOldLeads() {
+  const leads = oldLeads_(), ui = SpreadsheetApp.getUi();
+  ui.alert('Old leads', leads.length
+    ? leads.length + ' leads haven\'t been sent to GoHighLevel yet:\n' + stepCounts_(leads).join('\n') + '\n\nNothing was sent.'
+    : 'Every lead in the sheet has already been sent to GoHighLevel.', ui.ButtonSet.OK);
+}
+
+function pushOldLeads() {
+  const ui = SpreadsheetApp.getUi(), ghl = ghlConfig_();
+  if (!ghl) return ui.alert('GoHighLevel isn\'t set up yet: add GHL_TOKEN and GHL_LOCATION_ID under Project Settings → Script properties.');
+  const leads = oldLeads_();
+  if (!leads.length) return ui.alert('Every lead in the sheet has already been sent to GoHighLevel.');
+  const ok = ui.alert('Push old leads', 'Send ' + leads.length + ' leads to GoHighLevel now?\n' + stepCounts_(leads).join('\n')
+    + '\n\nThey get the tag "' + GHL_IMPORT_TAG + '" too.', ui.ButtonSet.YES_NO);
+  if (ok !== ui.Button.YES) return;
+  const result = pushLeads_(ghl, leads);
+  ui.alert('Push old leads', 'Sent ' + result.sent + ' of ' + leads.length + '.'
+    + (result.failed ? '\n' + result.failed + ' failed (details under Extensions → Apps Script → Executions); run it again to retry them.' : '')
+    + (result.left ? '\n' + result.left + ' left because it ran out of time: run it again to send the rest.' : ''), ui.ButtonSet.OK);
+}
+
+// Sends each lead, stops before Apps Script's 6-minute limit. Returns how many were sent, failed and left.
+function pushLeads_(ghl, leads) {
+  const started = Date.now(), setup = ghlSetup_(ghl, true);
+  let sent = 0, failed = 0, i = 0;
+  for (; i < leads.length && Date.now() - started < 4.5 * 60 * 1000; i++) {
+    const lead = leads[i];
+    try {
+      sendLead_(ghl, setup, lead, true);
+      markSent_(lead.row, new Date());
+      sent++;
+    } catch (err) {
+      console.error('Row ' + lead.row + ' (' + lead.email + '): ' + err);
+      failed++;
+    }
+    Utilities.sleep(150);   // stays well under GoHighLevel's 100 requests per 10 seconds
+  }
+  return { sent: sent, failed: failed, left: leads.length - i };
+}
+
+// One sheet row to GoHighLevel: the contact, the tag of every step it reached, its opportunity at the furthest
+// step and the application note. "imported" adds GHL_IMPORT_TAG first, before any step tag can start a workflow.
+function sendLead_(ghl, setup, lead, imported) {
+  const contactId = ghlUpsertContact_(ghl, setup, lead);
+  if (imported) ghl_(ghl, 'post', '/contacts/' + contactId + '/tags', { tags: [GHL_IMPORT_TAG] });
+  if (!lead.steps.length) return;
+  ghl_(ghl, 'post', '/contacts/' + contactId + '/tags', { tags: lead.steps.map(s => GHL_STEPS[s].tag) });
+  ghlMoveOpportunity_(ghl, setup, contactId, lead, lead.steps[lead.steps.length - 1]);
+  const finished = lead.steps.filter(s => s === 'applied' || s === 'not_qualified' || s === 'waitlist')[0];
+  if (finished) ghlNote_(ghl, contactId, lead, finished);
+}
+
+// A lead from before GoHighLevel was set up came back (finished their application, booked a call…): send
+// their whole row now, as a live lead (no "mert-imported" tag). Returns false when GoHighLevel isn't set up.
+function syncRow_(rowNum) {
+  const ghl = ghlConfig_();
+  if (!ghl) return false;
+  const lead = rowLead_(getSheet_().getRange(rowNum, 1, 1, COLUMNS.length).getValues()[0], rowNum);
+  if (!lead.email) return false;
+  sendLead_(ghl, ghlSetup_(ghl), lead, false);
+  return true;
+}
+
+function markSent_(rowNum, value) {
+  getSheet_().getRange(rowNum, COLUMNS.findIndex(([, f]) => f === '@ghl') + 1).setValue(value);
 }
 
 /* ---------- Telegram (optional) ----------
@@ -440,9 +638,9 @@ function telegramBooking_(e, params) {
     '📱 ' + (phone || answer('Phone') || '-'),
     '📧 ' + (email || '-'),
   ];
-  [['💰 Investment', 'Investment'], ['📍 Situation', 'Situation'], ['⚠️ Problem', 'Main Problem'],
-   ['🧾 Evals bought (12 mo)', 'Evals Bought'], ['🕰 Can trade', 'Trading Schedule'], ['🧱 Experience', 'Experience'],
-   ['🎯 Goal', 'Main Goal'], ['🎯 Goal', 'Biggest Goal'], ['⚠️ Obstacles', 'Obstacles'],
+  [['💰 Investment', 'Investment'], ['🧾 Evals bought (12 mo)', 'Evals Bought'], ['🕰 Can trade', 'Trading Schedule'],
+   ['🎯 Goal', 'Main Goal'], ['🎯 Goal', 'Biggest Goal'], ['📍 Situation', 'Situation'],
+   ['🧱 Experience', 'Experience'], ['⚠️ Problem', 'Main Problem'], ['⚠️ Obstacles', 'Obstacles'],
    ['📸 Instagram', 'Instagram'], ['🧪 Page', 'Version'], ['📣 Source', 'UTM Source']]
     .forEach(([label, header]) => { const v = answer(header); if (v) lines.push(label + ': ' + v); });
   try {

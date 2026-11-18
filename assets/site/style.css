@@ -439,3 +439,17 @@ footer .foot-nav a:hover { color: #fff; text-decoration: underline; }
   color: #555; font-size: 14px; background: repeating-linear-gradient(135deg, #f7f3fd 0 12px, #fff 12px 24px);
 }
 .cal-ph strong { color: #111; font-size: 17px; font-weight: 900; }
+
+/* ---------- Gold play buttons on the videos (the rest of the page stays purple) ---------- */
+:root { --play: linear-gradient(90deg, #d4ba00 0%, #f5d90a 48%, #ffe94d 100%); --play-rgb: 245, 217, 10; }
+.vph .play, .vp__big, .vp__replay i {
+  background: var(--play); color: #111;
+  box-shadow: 0 0 0 8px rgba(var(--play-rgb), .15), 0 0 22px rgba(var(--play-rgb), .35);
+}
+
+/* ---------- /discord: just the form, with the footer kept below the first screen on every device ---------- */
+body[data-page="discord"] .hero { min-height: calc(100vh + 80px); min-height: calc(100svh + 80px); padding-bottom: 120px; }
+/* The "Your Video Is Playing / Click To Unmute" box over the autoplaying videos: gold too */
+.listen { background: rgba(var(--play-rgb), .92); color: #111; border-color: rgba(255, 255, 255, .9); }
+.listen::after { animation-name: pulse-gold; }
+@keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(var(--play-rgb), .7); } 70%, 100% { box-shadow: 0 0 0 30px rgba(var(--play-rgb), 0); } }

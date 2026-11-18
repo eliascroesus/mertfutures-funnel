@@ -14,16 +14,16 @@ const CONFIG = {
   pages: { discord: "/discord", apply: "/apply", apply2: "/apply-2", booked: "/booked" },
   // Vimeo links (https://player.vimeo.com/video/123…). Until they're set the pages show a placeholder box.
   videos: {
-    vsl: "",
-    nextSteps: "",
+    vsl: "https://player.vimeo.com/video/1247997962",
+    nextSteps: "https://player.vimeo.com/video/1247997916",
   },
   // FAQ videos on /booked: [question, Vimeo link, short name for /admin's video stats].
   faqVideos: [
-    ["What's Inside The Order Flow Elite Mentorship?", "", "faqInside"],
-    ["Is Mert Legit?", "", "faqLegit"],
-    ["Will I Work With Mert Or An Assistant?", "", "faqWho"],
-    ["Can I Do This With A Full-Time Job?", "", "faqTime"],
-    ["I've Already Bought Courses. Why Is This Different?", "", "faqDifferent"],
+    ["What's Inside The Order Flow Elite Mentorship?", "https://player.vimeo.com/video/1247997891", "faqInside"],
+    ["Will I Work With Mert Or An Assistant?", "https://player.vimeo.com/video/1247997512", "faqWho"],
+    ["I'm A Beginner. Can I Still Do This?", "https://player.vimeo.com/video/1247997511", "faqBeginner"],
+    ["I've Already Bought A Course. Why Is This Different?", "https://player.vimeo.com/video/1247997510", "faqDifferent"],
+    ["Can I Do This With A Full-Time Job?", "https://player.vimeo.com/video/1247997509", "faqTime"],
   ],
   // GoHighLevel calendar (Calendars → the calendar's ⋮ → Share → Permanent link). Until it's set, a placeholder shows.
   ghlCalendarUrl: "",

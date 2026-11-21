@@ -10,7 +10,8 @@ at the top):
 2. **Page 2, A/B tested.** Each new opt-in is sent to one of two versions at random (50/50, `abSplitApply` in
    `CONFIG`) and keeps it if they come back. Add `?v=1` or `?v=2` to a link to see a specific one. Both start with the
    VSL (autoplays muted behind a "Click To Unmute" box), and people who just joined get a short purple confetti burst:
-   - **`/apply`** (V1): the application one question at a time under the video, then the GoHighLevel calendar.
+   - **`/apply`** (V1): the application one question at a time under the video (Jean Ivan's questions, with an emoji
+     "where do you want to be" question; name, email and Instagram come last), then Mert's NeetoCal calendar.
    - **`/apply-2`** (V2, iClose style): a short form beside the calendar, which stays blurred and locked until every
      answer is in.
 
@@ -34,7 +35,7 @@ story section is replaced by cards about the Discord and the mentorship; send Me
 | What | Where | Status |
 | --- | --- | --- |
 | Lead sheet | Set up `google-sheets/lead-capture.gs` (steps at the top), paste the Web app URL into `leadSheetUrl` | **Empty**: nothing is saved |
-| Calendar | `ghlCalendarUrl` (GoHighLevel permanent link) | **Empty**: page 2 shows "Calendar goes here" |
+| Calendar | `neetoCal` in `CONFIG` (Mert's NeetoCal embed: id, organization, slug) | Set. In NeetoCal, also set the redirect after booking to `https://mertfutures.com/booked` as a backup |
 | Videos | `videos.vsl`, `videos.nextSteps`, `faqVideos` (Vimeo links) | **Empty**: "Video coming soon" boxes |
 | Discord invite | `discordUrl` | Empty |
 | Contact email | Footer of every page, and the three legal pages (`support@mertfutures.com`) | **Placeholder**: replace with Mert's real address |

@@ -485,3 +485,7 @@ body[data-page="discord"] .hero { min-height: calc(100vh + 80px); min-height: ca
   box-shadow: 0 0 0 1px rgba(255, 255, 255, .04), 0 0 60px rgba(var(--accent-rgb), .16), 0 30px 80px -30px rgba(0, 0, 0, .85);
 }
 @media (max-width: 560px) { .vslframe { border-width: 1.5px; } }
+
+/* ---------- NeetoCal calendar: it sets its own height, so the box grows with it ---------- */
+.cal__frame.is-neeto, .booker__cal .cal__frame.is-neeto { height: auto; min-height: 640px; overflow: visible; }
+.cal__frame.is-neeto iframe { display: block; width: 100%; border: 0; }

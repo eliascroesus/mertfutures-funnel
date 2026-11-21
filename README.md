@@ -5,7 +5,7 @@ Jean Ivan funnel (black and purple instead of black and gold). Each page is the 
 share `assets/site/style.css` (the design) and `assets/site/funnel.js` (the behaviour, with its settings in `CONFIG`
 at the top):
 
-1. **Opt-in** (`/discord`; the bare domain `/` redirects there): the headline, a white "Join The FREE Discord" form,
+1. **Opt-in** (`/discord`; the bare domain `/` now redirects to `/apply`, change it in `vercel.json`): the headline, a white "Join The FREE Discord" form,
    then "What You Get Inside" the Discord.
 2. **Page 2, A/B tested.** Each new opt-in is sent to one of two versions at random (50/50, `abSplitApply` in
    `CONFIG`) and keeps it if they come back. Add `?v=1` or `?v=2` to a link to see a specific one. Both start with the

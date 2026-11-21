@@ -3,7 +3,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/discord",
+      "destination": "/apply",
       "permanent": false
     }
   ],

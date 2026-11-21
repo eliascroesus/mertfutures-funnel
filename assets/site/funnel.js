@@ -47,7 +47,7 @@ const QUESTIONS = [
     options: ["💼 Trading full time and out of my 9–5", "💰 Funded and getting consistent payouts", "📈 Consistently profitable every month", "🌍 Free to trade from anywhere in the world", "👨‍👩‍👧 Providing more for my family"] },
   { key: "obstacles", type: "long", title: "What challenges or obstacles do you feel are holding you back from reaching that goal?", placeholder: "Type your answer here..." },
   { key: "investment", type: "choice",
-    title: "In a world where this was a PERFECT fit and we knew without a doubt we could help you hit the goals you just mentioned, how much are you willing to invest into your trading and getting 1\u2011on\u20111 coaching from Mert?",
+    title: "In a world where this was a PERFECT fit and we knew without a doubt we could help you hit the goals you just mentioned, how much are you willing to invest into your trading? (the software, prop firm challenges and coaching)",
     help: "Full transparency is recommended. We'll help you either way.",
     options: ["$1,000 – $3,000", "$3,000 – $5,000", "I have a 650+ credit score", "I want to, but don't have the resources to fund my goals"] },
 ];
@@ -639,7 +639,7 @@ function initCalendar() {
   neetoCal.embed({
     type: "inline", id: cal.id, organization: cal.organization, elementSelector: "#neeto-cal",
     styles: "height: 100%; width: 100%;", queryParams: params, slug: cal.slug,
-    isSidebarAndCoverImgHidden: "false", shouldForwardQueryParams: "false",
+    isSidebarAndCoverImgHidden: "true", shouldForwardQueryParams: "false",   // "true": only the calendar, no host / duration / location panel
   });
   if (!document.querySelector('script[src*="cdn.neetocal.com"]')) {
     const js = document.createElement("script");

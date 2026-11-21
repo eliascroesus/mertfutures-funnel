@@ -50,7 +50,7 @@ import this repo with the default settings (Framework: Other). Every push to the
 
 ## Leads to Google Sheets and GoHighLevel
 
-Same as the Jean Ivan funnel. Every opt-in is a new row of the "Mert - Master Lead Sheet"; the application answers
+Same as the Jean Ivan funnel. Every opt-in is a new row of the [Mert - Master Lead Sheet](https://docs.google.com/spreadsheets/d/1wHwxLzIZPulzUi6LxP2lnWtBT7BnOHK0dG6d8VSnGcw/edit); the application answers
 and the booking time fill in that person's row (matched by email). The Version column says V1 (`/apply`) or V2
 (`/apply-2`). `/apply` also fills **Evals Bought** and **Trading Schedule**.
 

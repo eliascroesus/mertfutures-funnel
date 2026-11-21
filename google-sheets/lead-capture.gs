@@ -13,7 +13,8 @@
  *   - Telegram (optional)  → booked calls are posted to a Telegram group; see the bottom of this file.
  *
  * Setup (once):
- *   1. Create a Google Sheet called "Mert - Master Lead Sheet" (sheets.new) and open it.
+ *   1. Open the "Mert - Master Lead Sheet" spreadsheet:
+ *      https://docs.google.com/spreadsheets/d/1wHwxLzIZPulzUi6LxP2lnWtBT7BnOHK0dG6d8VSnGcw/edit
  *   2. Extensions → Apps Script. Delete what's there, paste this whole file, save.
  *   3. Pick "setup" in the function dropdown and click Run. Allow access when asked.
  *      This writes the column headers into row 1.
@@ -480,7 +481,7 @@ function norm_(text) {
  * Safe to run again: rows with a time in "Sent To GHL" are skipped. "Preview" only counts, it sends nothing.
  */
 const GHL_IMPORT_TAG = 'mert-imported';
-// Same as CONFIG.disqualify in assets/site/funnel.js and old/index.html: these investment answers are "not qualified".
+// Same as CONFIG.disqualify in assets/site/funnel.js: these investment answers are "not qualified".
 const DISQUALIFY = ['Under $1,000', "I want to, but don't have the resources to fund my goals"];
 
 function onOpen() {

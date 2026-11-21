@@ -49,7 +49,7 @@ const QUESTIONS = [
   { key: "investment", type: "choice",
     title: "In a world where this was a PERFECT fit and we knew without a doubt we could help you hit the goals you just mentioned, how much are you willing to invest into your trading? (the software, prop firm challenges and coaching)",
     help: "Full transparency is recommended. We'll help you either way.",
-    options: ["$1,000 – $3,000", "$3,000 – $5,000", "I have a 650+ credit score", "I want to, but don't have the resources to fund my goals"] },
+    options: ["$400 – $1,000", "$1,000 – $3,000", "$3,000 – $5,000", "I have a 650+ credit score", "I want to, but don't have the resources to fund my goals"] },
 ];
 const CONTACT_QUESTIONS = [
   { key: "name", type: "text", title: "Almost done. What's your full name?", placeholder: "Full name", autocomplete: "name" },

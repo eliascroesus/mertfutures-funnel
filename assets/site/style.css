@@ -440,16 +440,48 @@ footer .foot-nav a:hover { color: #fff; text-decoration: underline; }
 }
 .cal-ph strong { color: #111; font-size: 17px; font-weight: 900; }
 
-/* ---------- Gold play buttons on the videos (the rest of the page stays purple) ---------- */
-:root { --play: linear-gradient(90deg, #d4ba00 0%, #f5d90a 48%, #ffe94d 100%); --play-rgb: 245, 217, 10; }
-.vph .play, .vp__big, .vp__replay i {
-  background: var(--play); color: #111;
-  box-shadow: 0 0 0 8px rgba(var(--play-rgb), .15), 0 0 22px rgba(var(--play-rgb), .35);
-}
-
 /* ---------- /discord: just the form, with the footer kept below the first screen on every device ---------- */
 body[data-page="discord"] .hero { min-height: calc(100vh + 80px); min-height: calc(100svh + 80px); padding-bottom: 120px; }
-/* The "Your Video Is Playing / Click To Unmute" box over the autoplaying videos: gold too */
-.listen { background: rgba(var(--play-rgb), .92); color: #111; border-color: rgba(255, 255, 255, .9); }
-.listen::after { animation-name: pulse-gold; }
-@keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(var(--play-rgb), .7); } 70%, 100% { box-shadow: 0 0 0 30px rgba(var(--play-rgb), 0); } }
+
+/* ---------- Forms: clean white cards (no coloured border or glow) ---------- */
+.form-card, .book-panel, .booker {
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 24px 60px -24px rgba(0, 0, 0, .9);
+}
+.form-card { border-radius: 18px; }
+
+/* ---------- Video buttons: a plain play button, like a normal video player ---------- */
+.vph .play, .vp__big, .vp__replay i {
+  background: rgba(15, 15, 18, .55); color: #fff;
+  border: 2px solid rgba(255, 255, 255, .9);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: transform .15s ease, background .15s ease;
+}
+.vph .play { width: 76px; height: 76px; }
+.vph .play svg, .vp__big svg { width: 34%; height: 34%; margin-left: 8%; }
+.vp__hit:hover ~ .vp__big, .vp__replay:hover i { background: rgba(15, 15, 18, .75); transform: scale(1.05); }
+.vp__big { width: clamp(60px, 9vw, 80px); }
+
+/* "Your video is playing / Click to unmute": dark glass box, no pulsing colour */
+.listen {
+  width: min(62%, 340px); padding: 20px 18px; gap: 8px; border-radius: 18px; color: #fff;
+  background: rgba(10, 10, 12, .72); border: 1.5px solid rgba(255, 255, 255, .35);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .55); animation: none;
+}
+.listen::after { display: none; }
+.listen svg { width: clamp(34px, 6vw, 48px); }
+.listen strong { font-size: clamp(14px, 2.2vw, 19px); font-weight: 800; }
+
+/* Solid white play button with a dark triangle, and softer video frames */
+.vph .play, .vp__big, .vp__replay i {
+  background: rgba(255, 255, 255, .94); color: #111; border: 0;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, .14), 0 12px 34px rgba(0, 0, 0, .5);
+}
+.vp__hit:hover ~ .vp__big, .vp__replay:hover i { background: #fff; transform: scale(1.06); }
+.vslframe {
+  border: 1.5px solid rgba(var(--accent-rgb), .55);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .04), 0 0 60px rgba(var(--accent-rgb), .16), 0 30px 80px -30px rgba(0, 0, 0, .85);
+}
+@media (max-width: 560px) { .vslframe { border-width: 1.5px; } }

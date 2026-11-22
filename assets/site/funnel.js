@@ -5,7 +5,7 @@
 
 const CONFIG = {
   // Google Sheets Web app URL (ends in /exec), from google-sheets/lead-capture.gs. Leave "" to send nothing.
-  leadSheetUrl: "",
+  leadSheetUrl: "https://script.google.com/macros/s/AKfycby2dHv03rSMLpA8WG13fVcj6_HzpzYjlzeN__cSKfBxGDqpdJ7jvbCEXPZ04XS7RO63/exec",
   // The sheet's Version column: which page 2 the lead got, so the two can be compared.
   versions: { apply: "V1", apply2: "V2" },
   // A/B test: share of new opt-ins sent to /apply (one question at a time). The rest go to /apply-2 (the form

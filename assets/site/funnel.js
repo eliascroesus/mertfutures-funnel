@@ -651,6 +651,23 @@ function initCalendar() {
 // the page through a message; any message from there that talks about a finished booking counts.
 // Add ?debug to a page 2 link to see every message the calendar sends in the browser console.
 let bookingSent = false;
+// The call's time from the calendar's message: { start, end } (ISO), or null when it isn't in there.
+function callTime(data) {
+  const found = window.callCalendar && callCalendar.fromMessage(data);
+  if (found) return found;
+  let text = "";
+  try { text = typeof data === "string" ? data : JSON.stringify(data); } catch {}
+  const now = Date.now();
+  const times = (text.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})/g) || [])
+    .map(t => new Date(t)).filter(d => !isNaN(d) && d.getTime() > now + 5 * 6e4 && d.getTime() < now + 400 * 864e5).sort((x, y) => x - y);
+  return times.length ? { start: times[0].toISOString(), end: times[1] ? times[1].toISOString() : null } : null;
+}
+// "Mon, Nov 23, 7:00 PM (Europe/Berlin)": the call time in the visitor's own time zone, for the sheet.
+function callTimeText(iso) {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  try { return new Date(iso).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + (tz ? " (" + tz + ")" : ""); }
+  catch { return iso; }
+}
 const BOOKED_WORDS = /(booking|meeting|event|appointment)[-_ .]?(confirmed|created|scheduled|completed?|success|booked)|booked|scheduled/i;
 addEventListener("message", e => {
   if (/[?&]debug\b/.test(location.search)) console.log("[calendar message]", e.origin, e.data);
@@ -663,8 +680,9 @@ addEventListener("message", e => {
   if (!BOOKED_WORDS.test(text) || /height|resize/i.test(text) && !/confirm|booked|scheduled|success/i.test(text)) return;
   bookingSent = true;
   analytics.once("s:booked", { now: true });
-  sendLead({ name: lead.name || "", email: lead.email || "", phone: lead.phone || "" }, "booked");
-  store.set("booking", { bookedAt: Date.now(), ...((window.callCalendar && callCalendar.fromMessage(e.data)) || {}) });
+  const when = callTime(e.data);
+  sendLead({ name: lead.name || "", email: lead.email || "", phone: lead.phone || "", call_time: when ? callTimeText(when.start) : "" }, "booked");
+  store.set("booking", { bookedAt: Date.now(), sent: true, ...(when || {}) });
   setTimeout(() => go("booked"), 1500);
 });
 
@@ -672,6 +690,9 @@ addEventListener("message", e => {
 /* /booked                                                          */
 /* ======================================================================= */
 if (PAGE === "booked") {
+  // Reached /booked without the calendar's message (e.g. NeetoCal's "redirect after booking"): still mark the
+  // row as booked, once.
+  { const b = store.get("booking"); if (lead.email && !(b && b.sent)) { sendLead({ name: lead.name || "", email: lead.email, phone: lead.phone || "" }, "booked"); store.set("booking", { ...(b || {}), bookedAt: Date.now(), sent: true }); } }
   mountVideo($("#next-steps"), CONFIG.videos.nextSteps, { autoplay: true, title: "Next steps", name: "nextSteps" });
   const grid = $("#faq-videos");
   grid.innerHTML = CONFIG.faqVideos.map(([q, url], i) =>

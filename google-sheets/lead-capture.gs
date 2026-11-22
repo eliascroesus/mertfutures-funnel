@@ -6,7 +6,7 @@
  *                            Biggest Goal, Obstacles, Instagram, Investment;
  *                            V2 (/apply-2, form beside the calendar) fills Main Problem, Experience, Main Goal,
  *                            Investment, Ready To Fix, Instagram.
- *   - Booking a call       → stamps "Call Booked At" on their row.
+ *   - Booking a call       → stamps "Call Booked At" (when they booked) and fills "Call Time" (when the call is).
  *   - Source Link          → the /go/… tracked link (or app/site) they came from, as on /admin.
  *   - GoHighLevel (optional) → the same lead also goes to GoHighLevel; see further down this file.
  *     Leads already in the sheet are sent with the sheet's "GoHighLevel" menu → "Push old leads to GoHighLevel".
@@ -64,6 +64,7 @@ const COLUMNS = [
   ['Source Link', 'source_link'],   // the /go/… link they came from, as on /admin (or the app/site)
   ['Evals Bought', 'evals'],
   ['Trading Schedule', 'schedule'],
+  ['Call Time', 'call_time'],   // when the call is (from the calendar), in the lead's own time zone
 ];
 const HEADERS = COLUMNS.map(([header]) => header);
 const EMAIL_COL = COLUMNS.findIndex(([, field]) => field === 'email');
@@ -639,7 +640,7 @@ function telegramBooking_(e, params) {
     '📱 ' + (phone || answer('Phone') || '-'),
     '📧 ' + (email || '-'),
   ];
-  [['💰 Investment', 'Investment'], ['🧾 Evals bought (12 mo)', 'Evals Bought'], ['🕰 Can trade', 'Trading Schedule'],
+  [['📅 Call time', 'Call Time'], ['💰 Investment', 'Investment'], ['🧾 Evals bought (12 mo)', 'Evals Bought'], ['🕰 Can trade', 'Trading Schedule'],
    ['🎯 Goal', 'Main Goal'], ['🎯 Goal', 'Biggest Goal'], ['📍 Situation', 'Situation'],
    ['🧱 Experience', 'Experience'], ['⚠️ Problem', 'Main Problem'], ['⚠️ Obstacles', 'Obstacles'],
    ['📸 Instagram', 'Instagram'], ['🧪 Page', 'Version'], ['📣 Source', 'UTM Source']]

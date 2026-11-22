@@ -489,3 +489,7 @@ body[data-page="discord"] .hero { min-height: calc(100vh + 80px); min-height: ca
 /* ---------- NeetoCal calendar: it sets its own height, so the box grows with it ---------- */
 .cal__frame.is-neeto, .booker__cal .cal__frame.is-neeto { height: auto; min-height: 640px; overflow: visible; }
 .cal__frame.is-neeto iframe { display: block; width: 100%; border: 0; }
+
+/* ---------- Footer: all text the same dark gray ---------- */
+footer, footer p, footer p b, footer a, footer .brand, footer .foot-nav, footer .foot-nav a { color: #6b6b73; }
+footer .foot-nav a:hover { color: #8a8a93; }

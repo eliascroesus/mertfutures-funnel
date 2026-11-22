@@ -11,7 +11,7 @@ const CONFIG = {
   // A/B test: share of new opt-ins sent to /apply (one question at a time). The rest go to /apply-2 (the form
   // beside the calendar). Each visitor keeps the one they got. ?v=1 or ?v=2 in a link picks one; ?v=reset forgets it.
   abSplitApply: 0.5,
-  pages: { discord: "/discord", apply: "/apply", apply2: "/apply-2", booked: "/booked" },
+  pages: { discord: "/discord", apply: "/apply", apply2: "/apply-2", booked: "/booked", notqualified: "/not-qualified" },
   // Vimeo links (https://player.vimeo.com/video/123…). Until they're set the pages show a placeholder box.
   videos: {
     vsl: "https://player.vimeo.com/video/1247997962",
@@ -28,7 +28,8 @@ const CONFIG = {
   // The booking calendar on /apply and /apply-2: Mert's NeetoCal inline embed (from NeetoCal's embed code).
   // Its script only loads once the page's video is going, so it never slows the page down.
   neetoCal: { id: "fd8a073b-037a-470a-8456-a26504e2532c", organization: "uncapped", slug: "mert-strategy-call" },
-  discordUrl: "",
+  discordUrl: "https://discord.com/invite/mertfutures",
+  youtubeUrl: "https://www.youtube.com/@mertfutures",
   // Investment answers that don't qualify for a call: they see the free Discord instead of the calendar.
   // The mentorship is $2,000.
   disqualify: ["Under $1,000", "I want to, but don't have the resources to fund my goals"],
@@ -487,8 +488,8 @@ if (PAGE === "apply") {
     bar.style.width = "100%";
     quiz.hidden = true;
     if (CONFIG.disqualify.includes(answers.investment)) {
-      $("#nq").hidden = false;
-      $("#cal").remove();
+      // Their answers went to the sheet just above; give the send a moment, then the not-qualified page.
+      return setTimeout(() => go("notqualified"), 700);
     } else {
       initCalendar();
       $("#cal").classList.add("is-open");
@@ -596,7 +597,7 @@ if (PAGE === "apply2") {
       const data = { name: lead.name || "", email: lead.email, ...a, stage: out ? "not_qualified" : "applied" }, key = JSON.stringify(data);
       if (key !== sent) { sent = key; sendLead(data, "application"); }
       analytics.once(out ? "s:not_qualified" : "s:applied", { now: true });
-      if (out) { $("#booker-body").hidden = true; $(".booker__steps").hidden = true; $("#nq").hidden = false; }
+      if (out) setTimeout(() => go("notqualified"), 700);
     }, 1500);
   };
   form.addEventListener("input", update);

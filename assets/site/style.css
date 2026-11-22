@@ -493,3 +493,14 @@ body[data-page="discord"] .hero { min-height: calc(100vh + 80px); min-height: ca
 /* ---------- Footer: all text the same dark gray ---------- */
 footer, footer p, footer p b, footer a, footer .brand, footer .foot-nav, footer .foot-nav a { color: #6b6b73; }
 footer .foot-nav a:hover { color: #8a8a93; }
+
+/* ---------- Phones: smaller question titles and answers in the application ---------- */
+@media (max-width: 560px) {
+  .q__title { font-size: 17px; line-height: 1.35; }
+  .q__help { font-size: 13px; }
+  .q__opt { font-size: 14px; padding: 12px; gap: 10px; }
+  .q__key { width: 24px; height: 24px; font-size: 11px; }
+  .q textarea.input, .q .input { font-size: 16px; }
+  .booker__form h3 { font-size: 19px; }
+  .booker__form label { font-size: 13px; }
+}

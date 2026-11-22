@@ -2,6 +2,16 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/academy",
+      "destination": "https://discord.com/invite/mertfutures",
+      "permanent": false
+    },
+    {
+      "source": "/academy/:path*",
+      "destination": "https://discord.com/invite/mertfutures",
+      "permanent": false
+    },
+    {
       "source": "/",
       "destination": "/apply",
       "permanent": false

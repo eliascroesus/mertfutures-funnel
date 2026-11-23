@@ -65,6 +65,7 @@ const COLUMNS = [
   ['Evals Bought', 'evals'],
   ['Trading Schedule', 'schedule'],
   ['Call Time', 'call_time'],   // when the call is (from the calendar), in the lead's own time zone
+  ['Status', '@status'],   // Opted In → Qualified / Not Qualified → Call Booked
 ];
 const HEADERS = COLUMNS.map(([header]) => header);
 const EMAIL_COL = COLUMNS.findIndex(([, field]) => field === 'email');
@@ -109,7 +110,7 @@ function saveToSheet_(type, params) {
   const now = new Date();
 
   if (type === 'optin') {
-    sheet.appendRow(COLUMNS.map(([, field]) => (field === '@created' ? now : field[0] === '@' ? '' : clean_(params[field]))));
+    sheet.appendRow(COLUMNS.map(([, field]) => (field === '@created' ? now : field === '@status' ? 'Opted In' : field[0] === '@' ? '' : clean_(params[field]))));
     return { ok: true, row: sheet.getLastRow() };
   }
 
@@ -129,6 +130,12 @@ function saveToSheet_(type, params) {
   });
   if (type === 'application') row[COLUMNS.findIndex(([, f]) => f === '@application')] = now;
   if (type === 'booked') row[COLUMNS.findIndex(([, f]) => f === '@booked')] = now;
+  // Status: a finished application says whether they qualified; a booking always wins.
+  const statusCol = COLUMNS.findIndex(([, f]) => f === '@status');
+  if (type === 'booked') row[statusCol] = 'Call Booked';
+  else if (params.stage === 'not_qualified' && row[statusCol] !== 'Call Booked') row[statusCol] = 'Not Qualified';
+  else if (params.stage === 'applied' && row[statusCol] !== 'Call Booked') row[statusCol] = 'Qualified';
+  else if (!row[statusCol]) row[statusCol] = 'Opted In';
 
   sheet.getRange(rowNum, 1, 1, COLUMNS.length).setValues([row]);
   return { ok: true, row: rowNum, unsent: unsent };
@@ -155,7 +162,7 @@ function ensureHeaders_(sheet) {
   sheet.setFrozenRows(1);
   const dataRows = Math.max(sheet.getMaxRows() - 1, 1);
   COLUMNS.forEach(([, field], i) => {
-    if (field[0] === '@') sheet.getRange(2, i + 1, dataRows, 1).setNumberFormat('yyyy-mm-dd hh:mm:ss');
+    if (field[0] === '@' && field !== '@status') sheet.getRange(2, i + 1, dataRows, 1).setNumberFormat('yyyy-mm-dd hh:mm:ss');
   });
 }
 

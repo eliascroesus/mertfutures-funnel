@@ -56,6 +56,7 @@ const CONTACT_QUESTIONS = [
   { key: "name", type: "text", title: "Almost done. What's your full name?", placeholder: "Full name", autocomplete: "name" },
   { key: "email", type: "email", title: "What's your email?", placeholder: "name@example.com", autocomplete: "email" },
   { key: "instagram", type: "text", title: "What's your Instagram?", help: "No Instagram? Just type N/A.", placeholder: "@handle or N/A" },
+  { key: "phone", type: "phone", title: "And last, your phone number?", help: "Pick your country so we have the right country code.", placeholder: "Phone number" },
 ];
 
 // Results wall: [file in assets/mert/proof/, width, height, description]. NAME.webp shows on the page and
@@ -357,9 +358,37 @@ function phoneField(select, input) {
     : !p.ok ? "Please add a valid " + (p.country === "GB" ? "UK" : p.country) + " phone number (" + PHONE_RULES[p.country].hint + ")." : "";
   return { check, country, pick, problem };
 }
-const COUNTRY_OPTIONS = [["US", "+1", "🇺🇸"], ["CA", "+1", "🇨🇦"], ["GB", "+44", "🇬🇧"], ["AU", "+61", "🇦🇺"], ["DE", "+49", "🇩🇪"], ["NL", "+31", "🇳🇱"], ["FR", "+33", "🇫🇷"], ["CH", "+41", "🇨🇭"], ["TR", "+90", "🇹🇷"], ["AE", "+971", "🇦🇪"]]
-  .filter(([c]) => PHONE_RULES[c])
-  .map(([c, code, flag]) => `<option value="${code}" data-country="${c}">${flag} ${code}</option>`).join("");
+// Every country with phone rules (lead-form.js + phone-countries.js): the usual ones first, then A to Z.
+const TOP_COUNTRIES = ["US", "CA", "GB", "AU"];
+const COUNTRY_OPTIONS = [...TOP_COUNTRIES, ...Object.keys(PHONE_RULES).filter(c => !TOP_COUNTRIES.includes(c))
+  .sort((a, b) => ((window.PHONE_NAMES || {})[a] || a).localeCompare((window.PHONE_NAMES || {})[b] || b))]
+  .filter(c => PHONE_RULES[c])
+  .map(c => `<option value="+${PHONE_RULES[c].code}" data-country="${c}">${(window.PHONE_FLAGS || {})[c] || ""} +${PHONE_RULES[c].code} ${esc((window.PHONE_NAMES || {})[c] || c)}</option>`).join("");
+
+// Which country the visitor is in, for the phone box: Vercel's IP country (/api/geo), else their time zone, else
+// their browser language. Remembered for 30 days. calls back with a two-letter code, or "" if unsure.
+const TZ_COUNTRY = { "Europe/London": "GB", "Europe/Dublin": "IE", "Europe/Amsterdam": "NL", "Europe/Brussels": "BE", "Europe/Paris": "FR",
+  "Europe/Berlin": "DE", "Europe/Madrid": "ES", "Europe/Rome": "IT", "Europe/Lisbon": "PT", "Europe/Zurich": "CH", "Europe/Vienna": "AT",
+  "Europe/Stockholm": "SE", "Europe/Oslo": "NO", "Europe/Copenhagen": "DK", "Europe/Helsinki": "FI", "Europe/Warsaw": "PL", "Europe/Prague": "CZ",
+  "Europe/Bucharest": "RO", "Europe/Athens": "GR", "Europe/Budapest": "HU", "Europe/Istanbul": "TR", "Asia/Jerusalem": "IL", "Asia/Dubai": "AE",
+  "Asia/Riyadh": "SA", "Asia/Qatar": "QA", "Africa/Cairo": "EG", "Africa/Lagos": "NG", "Africa/Johannesburg": "ZA", "Africa/Nairobi": "KE",
+  "Asia/Kolkata": "IN", "Asia/Karachi": "PK", "Asia/Singapore": "SG", "Asia/Manila": "PH", "Asia/Tokyo": "JP", "Australia/Sydney": "AU",
+  "Australia/Melbourne": "AU", "Pacific/Auckland": "NZ", "America/Toronto": "CA", "America/Vancouver": "CA", "America/Mexico_City": "MX",
+  "America/Sao_Paulo": "BR", "America/Argentina/Buenos_Aires": "AR", "America/Bogota": "CO" };
+function visitorCountry(done) {
+  const ok = c => (c && PHONE_RULES[c] ? c : "");
+  const saved = ok(store.get("country"));
+  if (saved) return done(saved);
+  const guess = () => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    const lang = ((navigator.language || "").split("-")[1] || "").toUpperCase();
+    return ok(TZ_COUNTRY[tz]) || (/^America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Detroit)/.test(tz) ? "US" : "") || ok(lang);
+  };
+  let answered = false;
+  const finish = c => { if (answered) return; answered = true; if (c) store.set("country", c); done(c); };
+  setTimeout(() => finish(guess()), 1500);   // never wait long for it
+  fetch("/api/geo", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(d => finish(ok(d.country) || guess())).catch(() => finish(guess()));
+}
 
 /* ======================================================================= */
 /* /discord: the opt-in                                            */
@@ -368,6 +397,7 @@ if (PAGE === "discord") {
   const form = $("#optin-form"), err = $("#optin-error");
   form.cc.innerHTML = COUNTRY_OPTIONS;
   const phone = phoneField(form.cc, form.phone);
+  visitorCountry(c => { if (c && !form.phone.value.trim() && !(store.get("draft") || {}).country) phone.pick(c); });
   // What they type is kept, so a reload doesn't wipe it.
   const saveDraft = () => store.set("draft", { name: form.name.value, email: form.email.value, phone: form.phone.value, country: phone.country() });
   form.addEventListener("input", saveDraft);
@@ -434,10 +464,16 @@ if (PAGE === "apply") {
           `<label class="q__opt"><input type="radio" name="${q.key}" value="${esc(o)}"><span class="q__key">${String.fromCharCode(65 + k)}</span><span>${esc(o)}</span></label>`).join("")}</div>`
       : q.type === "long"
         ? `<textarea class="input" id="${id}" name="${q.key}" placeholder="${esc(q.placeholder || "")}"></textarea>${ok}`
-        : `<input class="input" id="${id}" name="${q.key}" type="${q.type === "email" ? "email" : "text"}" placeholder="${esc(q.placeholder || "")}"${q.autocomplete ? ` autocomplete="${q.autocomplete}"` : ' autocomplete="off"'}>${ok}`;
+        : q.type === "phone"
+          ? `<div class="phone"><select class="select" name="cc" aria-label="Country">${COUNTRY_OPTIONS}</select><input class="input" id="${id}" name="phone" type="tel" autocomplete="tel-national" placeholder="${esc(q.placeholder)}"></div>${ok}`
+          : `<input class="input" id="${id}" name="${q.key}" type="${q.type === "email" ? "email" : "text"}" placeholder="${esc(q.placeholder || "")}"${q.autocomplete ? ` autocomplete="${q.autocomplete}"` : ' autocomplete="off"'}>${ok}`;
     return `<div class="q" data-i="${i}" hidden><label class="q__title" id="${id}-t" for="${id}">${esc(q.title)}</label>${q.help ? `<p class="q__help">${esc(q.help)}</p>` : ""}${field}<p class="q__err" hidden></p></div>`;
   }).join("");
   const stepEls = $$(".q", form);
+  const phone = phoneField(form.cc, form.elements.phone);
+  if (lead.country && PHONE_RULES[lead.country]) phone.pick(lead.country);
+  else visitorCountry(c => { if (c && !form.elements.phone.value.trim()) phone.pick(c); });
+  if (lead.phoneNational) form.elements.phone.value = lead.phoneNational;
   if (lead.name) form.elements.name.value = lead.name;
   if (lead.email) form.elements.email.value = lead.email;
 
@@ -454,7 +490,7 @@ if (PAGE === "apply") {
   // Saves the answers so far to their row (rows are matched by email, so only once we have one).
   const save = last => {
     if (!lead.email) return;
-    const data = { name: lead.name || "", email: lead.email, ...answers };
+    const data = { name: lead.name || "", email: lead.email, ...(lead.phone ? { phone: lead.phone, country: lead.country || "" } : {}), ...answers };
     const out = CONFIG.disqualify.includes(answers.investment);
     if (last) data.stage = out ? "not_qualified" : "applied";
     const key = JSON.stringify(data);
@@ -465,12 +501,20 @@ if (PAGE === "apply") {
     const q = steps[index], el = stepEls[index], err = $(".q__err", el);
     if (q.key === "name") form.elements.name.value = tidyName(form.elements.name.value);
     let value = valueOf(q), problem = "";
-    if (!value) problem = q.type === "choice" ? "Please pick an answer." : "Please fill this in.";
+    if (q.type === "phone") {
+      const p = phone.check(true);
+      problem = phone.problem(p);
+      if (!problem) { value = p.e164; lead.phone = p.e164; lead.country = p.country; lead.phoneNational = form.elements.phone.value.trim(); store.set("lead", lead); }
+    }
+    else if (!value) problem = q.type === "choice" ? "Please pick an answer." : "Please fill this in.";
     else if (q.type === "email" && !emailOk(value)) problem = "Please enter a valid email.";
     if (problem) { err.textContent = problem; err.hidden = false; return; }
     err.hidden = true;
     const last = index === steps.length - 1;
-    if (q.key === "name" || q.key === "email") {
+    if (q.key === "phone") {
+      // The number and its country go on their row (and to GoHighLevel), with the finished application.
+      save(last);
+    } else if (q.key === "name" || q.key === "email") {
       const changed = lead[q.key] !== value;
       lead[q.key] = value; store.set("lead", lead);
       // Someone who didn't come through /discord: their email makes this their opt-in (a new row in the sheet).
@@ -558,6 +602,7 @@ if (PAGE === "apply2") {
   else {
     form.cc.innerHTML = COUNTRY_OPTIONS;
     phone = phoneField(form.cc, form.phone);
+    visitorCountry(c => { if (c && !form.phone.value.trim()) phone.pick(c); });
     if (lead.name) form.elements.name.value = lead.name;
     if (lead.email) form.elements.email.value = lead.email;
     form.elements.name.addEventListener("blur", () => { form.elements.name.value = tidyName(form.elements.name.value); });

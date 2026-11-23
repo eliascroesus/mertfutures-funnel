@@ -24,6 +24,12 @@ const PHONE_RULES = {
   AE: { code: "971", re: validRe("AE"), hint: "like 050 123 4567", fmt: n => n.length === 8 ? [1, 3, 4] : [2, 3, 4] },
 };
 
+// The digit people dial before a number inside the country (the "0" in 07400 123456), or "" (US, Italy, Spain…).
+function trunk(country) {
+  const r = PHONE_RULES[country];
+  return r.np !== undefined ? r.np : r.code === "1" ? "" : "0";
+}
+
 // Reads a typed phone number for the selected country: → { ok, e164: "+12015550123", national, country }.
 // A typed "+44…" (or "0044…") means that country instead; "1 201…" and a trunk "0" are understood.
 function readPhone(raw, country) {
@@ -31,13 +37,15 @@ function readPhone(raw, country) {
   let digits = String(raw).replace(/\D/g, "");
   if (/^\s*(\+|00)/.test(raw)) {   // they typed their own country code
     digits = digits.replace(/^00/, "");
-    const match = Object.entries(PHONE_RULES).find(([c, r]) => digits.startsWith(r.code) && (c === country || r.code !== rule.code));
+    // The longest country code that fits (so +351… is Portugal, not +35…); the selected country wins a tie.
+    const match = Object.entries(PHONE_RULES).filter(([c, r]) => digits.startsWith(r.code))
+      .sort(([c1, a], [c2, b]) => b.code.length - a.code.length || (c2 === country) - (c1 === country))[0];
     if (match && match[0] !== country) return readPhone(raw, match[0]);
     if (digits.startsWith(rule.code)) digits = digits.slice(rule.code.length);
   } else if (rule.code === "1" && digits.length === 11 && digits[0] === "1") {
     digits = digits.slice(1);   // "1 201 555 0123"
-  } else if (rule.code !== "1") {
-    digits = digits.replace(/^0/, "");   // trunk 0: "07400…" → "7400…"
+  } else if (trunk(country)) {
+    if (digits.startsWith(trunk(country))) digits = digits.slice(trunk(country).length);   // trunk 0: "07400…" → "7400…"
   }
   return { ok: rule.re.test(digits), e164: "+" + rule.code + digits, national: digits, country };
 }
@@ -47,7 +55,7 @@ function formatPhone(national, country) {
   const fmt = PHONE_RULES[country].fmt, groups = typeof fmt === "function" ? fmt(national) : fmt, out = [];
   let i = 0;
   groups.forEach((n, g) => { const part = national.slice(i, g === groups.length - 1 ? undefined : i + n); if (part) out.push(part); i += n; });
-  return (PHONE_RULES[country].code === "1" ? "" : "0") + out.join(" ");
+  return trunk(country) + out.join(" ");
 }
 
 // "jordan lee" or "JORDAN LEE" → "Jordan Lee", so emails say "Hey Jordan". Names typed with their own
